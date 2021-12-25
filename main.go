@@ -20,5 +20,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fw.Dump()
+	fw.Validate()
+	fw.Pretty()
+	//fw.Dump()
 }
