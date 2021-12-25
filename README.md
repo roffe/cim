@@ -11,7 +11,7 @@ VIN: YS3FH46S191013511
 PIN: "23DZ" / "23DZ"
 
 Model Year: 09
-Steering Angle Sensor: 3
+Steering Angle Sensor: true
 
 Programmed keys: 2
 Key 1: 31F7F510 / 31F7F510

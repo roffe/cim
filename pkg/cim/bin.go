@@ -49,7 +49,7 @@ type Bin struct {
 	crc32                  string    `bin:"-"`
 	MagicByte              uint8     `bin:"len:1"`         // 0x20
 	ProgrammingDate        time.Time `bin:"BCDDate,len:3"` // BCD Binary-Coded Decimal yy-mm-dd
-	SasOption              uint8     `bin:"len:1"`
+	SasOption              bool      `bin:"Sasopt,len:1"`  // 0x03 true
 	UnknownBytes1          []byte    `bin:"len:6"`
 	PnSAAB1                uint32    `bin:"len:4"`
 	PnSAAB1_2              string    `bin:"len:2"`
@@ -83,6 +83,17 @@ type Bin struct {
 	EOF                    byte   `bin:"len:1"` //0x00
 }
 
+func (*Bin) Sasopt(r binstruct.Reader) (bool, error) {
+	b, err := r.ReadByte()
+	if err != nil {
+		return false, err
+	}
+	if b == 0x03 {
+		return true, nil
+	}
+	return false, nil
+}
+
 func (bin *Bin) Filename() string {
 	return bin.filename
 }
@@ -95,6 +106,7 @@ func (bin *Bin) CRC32() string {
 	return bin.crc32
 }
 
+// Return Serial sticker as uint64, stored as 5byte Binary-Coded Decimal
 func (*Bin) ReadSN(r binstruct.Reader) (uint64, error) {
 	_, b, err := r.ReadBytes(5)
 	if err != nil {
@@ -149,7 +161,7 @@ func (fw *Bin) Dump() {
 	fmt.Println("")
 
 	fmt.Printf("Model Year: %02s\n", fw.Vin.Data[9:10])
-	fmt.Printf("Steering Angle Sensor: %d\n", fw.SasOption)
+	fmt.Printf("Steering Angle Sensor: %t\n", fw.SasOption)
 	fmt.Println("")
 
 	fmt.Println("Programmed keys:", fw.Keys.KeysKeysCount1)
