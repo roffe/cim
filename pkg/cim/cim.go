@@ -44,7 +44,7 @@ type Bin struct {
 	crc32                string    `bin:"-"`
 	MagicByte            uint8     `bin:"len:1"`         // 0x20
 	ProgrammingDate      time.Time `bin:"BCDDate,len:3"` // BCD Binary-Coded Decimal yy-mm-dd
-	SasOption            bool      `bin:"Sasopt,len:1"`  // 0x03 true
+	SasOption            bool      `bin:"Sasopt,len:1"`  // Steering Angle Sensor 0x03 = true
 	UnknownBytes1        []byte    `bin:"len:6"`
 	PnSAAB1              uint32    `bin:"len:4"`
 	PnSAAB1_2            string    `bin:"len:2"`
@@ -52,12 +52,12 @@ type Bin struct {
 	PnBase1              uint32    `bin:"len:4"`
 	PnBase1_2            string    `bin:"len:2"`
 	Vin                  struct {
-		Data     string `bin:"len:17"`
+		Data     string `bin:"len:17"` // Vin as ASCII
 		Unknown  []byte `bin:"len:10"`
 		SpsCount uint8
-		Checksum uint16 `bin:"len:2"`
+		Checksum uint16 `bin:"len:2"` // CRC16 MCRF4XX
 	} // 30 bytes
-	ProgrammingID []string `bin:"len:3,[len:10]"`
+	ProgrammingID []string `bin:"len:3,[len:10]"` // 3 last sps progrmming ids's groups of 10 characters each. 30 bytes
 	UnknownData3  []byte   `bin:"len:88"`
 	Pin           Pin      // 20 bytes
 	UnknownData4  []byte   `bin:"len:4"`
@@ -77,10 +77,10 @@ type Bin struct {
 		KeysKeysCount2 uint8    `bin:"len:1"`
 		KeysUnknown2   []byte   `bin:"len:7"`
 		KeyErrors2     uint8    `bin:"len:1"`
-		Checksum2      uint16   `bin:"len:2"`
+		Checksum2      uint16   `bin:"len:2"` // CRC16 MCRF4XX
 	} // 74 bytes
 	UnknownData5 []byte `bin:"len:25"`
-	RSync        struct {
+	Sync         struct {
 		Data     [][]byte `bin:"len:5,[len:4]"`
 		Checksum uint16   `bin:"len:2"`
 	} // 22 bytes
@@ -92,15 +92,15 @@ type Bin struct {
 	SnSticker              uint64    `bin:"ReadSN,len:5"`   // BCD
 	ProgrammingFactoryDate time.Time `bin:"BCDDateR,len:3"` // Reversed BCD date dd-mm-yy
 	UnknownBytes2          []byte    `bin:"len:3"`
-	PnDelphi               uint32    `bin:"Uint32l,len:4"`
+	PnDelphi               uint32    `bin:"Uint32l,len:4"` // Little endian
 	UnknownBytes3          []byte    `bin:"len:2"`
-	PnSAAB2                uint32    `bin:"Uint32l,len:4"`
+	PnSAAB2                uint32    `bin:"Uint32l,len:4"` // Little endian
 	UnknownBytes4          []byte    `bin:"len:3"`
 	PSK                    struct {
 		Low      []byte `bin:"len:4"`
 		High     []byte `bin:"len:4"`
 		Ide      []byte `bin:"len:4"`
-		Checksum uint16 `bin:"len:2"`
+		Checksum uint16 `bin:"len:2"` // CRC16 MCRF4XX
 	} // 14 bytes
 	UnknownData10 []byte `bin:"len:12"`
 	EOF           byte   `bin:"len:1"` //0x00
