@@ -1,7 +1,10 @@
 # CIM Column Integrated Module
+
 Golang impementation of findings from https://www.trionictuning.com/forum/viewtopic.php?f=5&t=2167
 
-```
+-- WIP -- This is not accurate and production ready yet
+
+```s
 go run . /mnt/e/saab/cim/fisringen.bin            
 Bin file: fisringen.bin
 MD5: 570b490a703aabadfce25546b62d6814

@@ -28,7 +28,6 @@ func (fw *Bin) Pretty() {
 		keys.AppendRow(table.Row{
 			i + 1, fmt.Sprintf("%X", k), fmt.Sprintf("%X", fw.Keys.Keys2[i]),
 		})
-		//fmt.Printf("Key %d: %X / %X\n", i+1, k, fw.Keys.Keys2[i])
 	}
 	keys.Render()
 
@@ -40,14 +39,14 @@ func (fw *Bin) Pretty() {
 	})
 	isk.Render()
 
-	t4 := s("Remotes")
-	t4.AppendRows([]table.Row{
+	r := s("Remotes")
+	r.AppendRows([]table.Row{
 		{"PSK High", fmt.Sprintf("%X", fw.PSK.High)},
 		{"PSK Low", fmt.Sprintf("%X", fw.PSK.Low)},
 		{"PCF", "TODO"},
-		{"RSync", fmt.Sprintf("%X", fw.RSync.Data)},
+		{"Sync", fmt.Sprintf("%X", fw.Sync.Data)},
 	})
-	t4.Render()
+	r.Render()
 
 	ph := s("Programming history")
 	ph.AppendRow(table.Row{"Serial sticker", fw.SnSticker})
@@ -61,19 +60,17 @@ func (fw *Bin) Pretty() {
 			ph.AppendRow(table.Row{fmt.Sprintf("Workshop %d ID", i+1), strings.TrimRight(fw.ProgrammingID[i], " ")})
 		}
 	}
-
 	ph.Render()
 
 	pn := s("Part numbers")
 	pn.AppendRows([]table.Row{
 		{"End model (HW+SW)", fmt.Sprintf("%d%s", fw.PnSAAB1, fw.PnSAAB1_2)},
 		{"Base model (HW+boot)", fmt.Sprintf("%d%s", fw.PnBase1, fw.PnBase1_2)},
-		{"Delphi part number", fmt.Sprintf("%d", fw.PnDelphi)},
-		{"SAAB part number (factory?)", fmt.Sprintf("%d", fw.PnSAAB2)},
-		{"Configuration Version:", fmt.Sprintf("%d", fw.ConfigurationVersion)},
+		{"Delphi part number", fw.PnDelphi},
+		{"SAAB part number (factory?)", fw.PnSAAB2},
+		{"Configuration Version:", fw.ConfigurationVersion},
 	})
 	pn.Render()
-
 }
 
 func s(title string) table.Writer {

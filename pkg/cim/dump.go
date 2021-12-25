@@ -33,7 +33,7 @@ func (fw *Bin) Dump() {
 	fmt.Printf("PSK Low:  %X\n", fw.PSK.Low)
 	fmt.Printf("PCF: %s\n", "TODO")
 	fmt.Printf("Sync: ")
-	for _, v := range fw.RSync.Data {
+	for _, v := range fw.Sync.Data {
 		fmt.Printf("%X ", v)
 	}
 	fmt.Println()
