@@ -100,9 +100,48 @@
 <body>
     <h1>CIM Dump View</h1>
     <div class="content">
-        <h4><a href="/"><button>Back</button></a></burron>{{.filename}}</h4>
+        <h6><a href="/"><button>Back</button></a></burron>{{.filename}}</h6>
+        <hr>
+        <div>
+            <form>
+                <table>
+                    <tr>
+                        <td>
+                            MD5:&nbsp;<b>{{.fw.MD5}}</b><br>
+                            CRC32:&nbsp;<b>{{.fw.CRC32}}</b><br>
+                            Vin:&nbsp;<input type="text" value="{{.fw.Vin.Data}}"><br>
+                            Model Year: <b>{{.fw.ModelYear}}</b><br>
+                            Pin:&nbsp;<input type="text" value="{{print .fw.Pin.Pin1}}"><br>
+                            Steering Angle Sensor:&nbsp;<b>{{.fw.SasOpt}}</b><br>
+                            Programmed keys:&nbsp;<b>{{.fw.Keys.KeysKeysCount1}}</b><br>
+                            {{range $key, $val := .fw.Keys.Keys1}}
+                            <b>{{$key}}</b> <input type="text" value="{{printHex $val}}"><br>
+                            {{end}}<br>
+                        </td>
+                        <td>
+                            <b>Remotes:</b><br>
+                            ISK High:&nbsp;<input type="text" value="{{printHex .fw.Keys.IskHI1}}"><br>
+                            ISK Low:&nbsp;<input type="text" value="{{printHex .fw.Keys.IskLO1}}"><br>
+                            PCF:&nbsp;<b>6732F2C5</b><br>
+                            Sync:&nbsp;
+                            {{range $val := .fw.Sync.Data}}
+                            <input type="text" value="{{printHex $val}}">
+                            {{end}}<br>
+                            <br>
+                            Programming history:<br>
+                            <br>
+                            Serial sticker: {{.fw.SnSticker}}
+                            <br>
+                            Part numbers:<br>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+        <hr>
         <div class="dump_contents">
-            {{.Bytes}}
+            {{.Hexview}}
         </div>
     </div>
     <hr>
