@@ -16,7 +16,7 @@ import (
 )
 
 func init() {
-	gin.SetMode(gin.ReleaseMode)
+	//gin.SetMode(gin.ReleaseMode)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	/*
 		if len(os.Args) < 2 {
@@ -96,10 +96,6 @@ func web() {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
-
-		//fmt.Printf("%X\n", buf)
-
-		log.Println("bin uploaded, size:", n)
 		if n < 512 || n > 512 {
 			c.String(http.StatusInternalServerError, "invalid bin size")
 			return
@@ -107,11 +103,13 @@ func web() {
 
 		fw, err := cim.LoadBytes(filename, buf)
 		if err != nil {
+			c.Error(err)
 			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 		bs, err := fw.Bytes()
 		if err != nil {
+			c.Error(err)
 			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
