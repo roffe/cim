@@ -128,9 +128,9 @@
             }
             for (let byte = 0; byte < section.length; byte++) {
                 $bytes = $('.byte-' + (section.start + byte));
-                if (section.confirmed) {
-                    $bytes.addClass('confirmed');
-                }
+                //if (section.confirmed) {
+                //    $bytes.addClass('confirmed');
+                //}
                 $bytes.addClass('section').addClass('section-' + section.id).data('section', section);
                 if (section.checksum) {
                     $bytes.addClass('checksum');

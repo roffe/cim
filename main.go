@@ -133,6 +133,11 @@ func web() {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
+		if err := fw.Validate(); err != nil {
+			c.Error(err)
+			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
 		bs, err := fw.Bytes()
 		if err != nil {
 			c.Error(err)
