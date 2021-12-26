@@ -8,8 +8,9 @@ import (
 
 type PSK struct {
 	Low      []byte `bin:"len:4"`
-	High     []byte `bin:"len:4"`
-	Unknown  []byte `bin:"len:4"`
+	High     []byte `bin:"len:2"`
+	Constant []byte `bin:"len:4"`
+	Unknown  []byte `bin:"len:2"`
 	Checksum uint16 `bin:"Uint16l,len:2"` // CRC16 MCRF4XX
 }
 

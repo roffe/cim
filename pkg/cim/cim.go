@@ -98,7 +98,7 @@ type Bin struct {
 	DelphiPN               uint32        `bin:"Uint32l,len:4"` // Little endian, Delphi part number
 	UnknownBytes3          []byte        `bin:"len:2"`
 	PartNo                 uint32        `bin:"Uint32l,len:4"` // Little endian, SAAB part number (factory?)
-	UnknownBytes4          []byte        `bin:"len:3"`
+	UnknownData14          []byte        `bin:"len:3"`
 	PSK                    PSK           // 14 bytes
 	UnknownData10          UnknownData10 `bin:"len:12"`
 	EOF                    byte          `bin:"len:1"` //0x00
@@ -143,6 +143,15 @@ func (*Bin) BCDDateR(r binstruct.Reader) (time.Time, error) {
 	return out, nil
 }
 
+// Return Serial sticker as uint64, stored as 5byte Binary-Coded Decimal (BCD)
+func (*Bin) ReadSN(r binstruct.Reader) (uint64, error) {
+	_, b, err := r.ReadBytes(5)
+	if err != nil {
+		return 0, nil
+	}
+	return bcd.ToUint64(b), nil
+}
+
 func (bin *Bin) Filename() string {
 	return bin.filename
 }
@@ -153,15 +162,6 @@ func (bin *Bin) MD5() string {
 
 func (bin *Bin) CRC32() string {
 	return bin.crc32
-}
-
-// Return Serial sticker as uint64, stored as 5byte Binary-Coded Decimal (BCD)
-func (*Bin) ReadSN(r binstruct.Reader) (uint64, error) {
-	_, b, err := r.ReadBytes(5)
-	if err != nil {
-		return 0, nil
-	}
-	return bcd.ToUint64(b), nil
 }
 
 // Return model year from VIN

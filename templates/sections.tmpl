@@ -149,14 +149,18 @@ var sections = [
         confirmed: true
     },
     {
-        id: 'KEYS_UNKNOWN',
+        id: 'KEYS_CONSTANT',
         start: 0x118,
-        length: 7
+        length: 7,
+        confirmed: true,
+        type: "fixed data"
     },
     {
-        id: 'KEYS_UNKNOWN',
+        id: 'KEYS_CONSTANT',
         start: 0x13D,
-        length: 7
+        length: 7,
+        confirmed: true,
+        type: "fixed data"
     },
     {
         id: 'KEYS_COUNT',
@@ -221,9 +225,14 @@ var sections = [
         confirmed: true
     },
     {
-        id: 'PSK_UNKNOWN',
+        id: 'PSK_CONSTANT',
         start: 0x1eb,
-        length: 6
+        length: 4
+    },
+    {
+        id: 'PSK_UNKNOWN',
+        start: 0x1ef,
+        length: 2
     },
     {
         id: 'CHECKSUM_PSK',

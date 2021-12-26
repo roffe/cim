@@ -13,14 +13,14 @@ type Keys struct {
 	IskLO1         []byte   `bin:"len:2"`
 	Keys1          [][]byte `bin:"len:5,[len:4]"`
 	KeysKeysCount1 uint8    `bin:"len:1"`
-	KeysUnknown1   []byte   `bin:"len:7"`
+	KeysConstant1  []byte   `bin:"len:7"`
 	KeyErrors1     uint8    `bin:"len:1"`
 	Checksum1      uint16   `bin:"Uint16l,len:2"`
 	IskHI2         []byte   `bin:"len:4"`
 	IskLO2         []byte   `bin:"len:2"`
 	Keys2          [][]byte `bin:"len:5,[len:4]"`
 	KeysKeysCount2 uint8    `bin:"len:1"`
-	KeysUnknown2   []byte   `bin:"len:7"`
+	KeysConstant2  []byte   `bin:"len:7"`
 	KeyErrors2     uint8    `bin:"len:1"`
 	Checksum2      uint16   `bin:"Uint16l,len:2"` // CRC16 MCRF4XX
 }

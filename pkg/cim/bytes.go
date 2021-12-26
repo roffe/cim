@@ -76,7 +76,7 @@ func (bin *Bin) Bytes() ([]byte, error) {
 		{o, binary.BigEndian, bin.Keys.Keys1[3]},
 		{o, binary.BigEndian, bin.Keys.Keys1[4]},
 		{o, binary.LittleEndian, bin.Keys.KeysKeysCount1},
-		{o, binary.BigEndian, bin.Keys.KeysUnknown1},
+		{o, binary.BigEndian, bin.Keys.KeysConstant1},
 		{o, binary.LittleEndian, bin.Keys.KeyErrors1},
 		{o, binary.LittleEndian, bin.Keys.Checksum1},
 		{o, binary.BigEndian, bin.Keys.IskHI2},
@@ -87,7 +87,7 @@ func (bin *Bin) Bytes() ([]byte, error) {
 		{o, binary.BigEndian, bin.Keys.Keys2[3]},
 		{o, binary.BigEndian, bin.Keys.Keys2[4]},
 		{o, binary.LittleEndian, bin.Keys.KeysKeysCount2},
-		{o, binary.BigEndian, bin.Keys.KeysUnknown2},
+		{o, binary.BigEndian, bin.Keys.KeysConstant2},
 		{o, binary.LittleEndian, bin.Keys.KeyErrors2},
 		{o, binary.LittleEndian, bin.Keys.Checksum2},
 
@@ -132,10 +132,11 @@ func (bin *Bin) Bytes() ([]byte, error) {
 
 		{o, binary.LittleEndian, bin.PartNo},
 
-		{o, binary.LittleEndian, bin.UnknownBytes4},
+		{o, binary.LittleEndian, bin.UnknownData14},
 
 		{o, binary.LittleEndian, bin.PSK.Low},
 		{o, binary.LittleEndian, bin.PSK.High},
+		{o, binary.LittleEndian, bin.PSK.Constant},
 		{o, binary.LittleEndian, bin.PSK.Unknown},
 		{o, binary.LittleEndian, bin.PSK.Checksum},
 
