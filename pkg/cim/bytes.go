@@ -17,6 +17,7 @@ type writeOp struct {
 	v interface{}      // data
 }
 
+// Return the byte representation of the binary
 func (bin *Bin) Bytes() ([]byte, error) {
 	o := bytes.NewBuffer([]byte{})
 	ops := []writeOp{

@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -17,17 +18,13 @@ import (
 )
 
 func init() {
-	//gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.ReleaseMode)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	/*
-		if len(os.Args) < 2 {
-			log.Fatal("missing input filename")
-		}
-	*/
 }
 
 func main() {
-	/*
+	// if we pass a filename, print to the console instead
+	if len(os.Args) == 2 {
 		filename := os.Args[1]
 		fw, err := cim.Load(filename)
 		if err != nil {
@@ -36,12 +33,15 @@ func main() {
 		if err := fw.Validate(); err != nil {
 			log.Fatal(err)
 		}
-	*/
-	//fw.Pretty()
-	//fw.Dump()
-	//log.Println(fw.Vin.Value)
+		fw.Pretty()
+		//fw.Dump()
+		return
+	}
+
 	fmt.Println("open http://localhost:8080")
-	web()
+	if err := serve(); err != nil {
+		log.Fatal(err)
+	}
 
 }
 
@@ -63,149 +63,151 @@ var templateHelpers = template.FuncMap{
 	},
 }
 
-func web() {
+func serve() error {
 	r := gin.Default()
-	r.MaxMultipartMemory = 1 << 20
+	// Load templates
 	//r.LoadHTMLGlob("templates/*.tmpl")
-
 	if tmpl, err := template.New("projectViews").Funcs(templateHelpers).ParseGlob("templates/*.tmpl"); err == nil {
 		r.SetHTMLTemplate(tmpl)
 	} else {
-		panic(err)
+		return err
 	}
 
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "upload.tmpl", nil)
-	})
+	// Set upload limit for multipart form
+	r.MaxMultipartMemory = 1 << 20
 
-	r.POST("/save", func(c *gin.Context) {
-		file := c.PostForm("file")
-		filename := c.PostForm("filename")
+	r.GET("/", func(c *gin.Context) { c.HTML(http.StatusOK, "upload.tmpl", nil) })
+	r.POST("/save", saveHandler)
+	r.POST("/", uploadHandler)
 
-		b, err := base64.StdEncoding.DecodeString(file)
-		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
+	return r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+}
 
-		for i, bb := range b {
-			b[i] = bb ^ 0xff
-		}
+// Handle file uploads
+func uploadHandler(c *gin.Context) {
+	buf, filename, n, err := getFileFromCtx(c)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	if n < 512 || n > 512 {
+		c.String(http.StatusInternalServerError, "invalid bin size")
+		return
+	}
 
-		fw, err := cim.LoadBytes(filename, b)
-		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
-		bs, err := fw.Bytes()
-		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
-		for i, b := range bs {
-			bs[i] = b ^ 0xFF
-		}
+	fw, err := cim.LoadBytes(filename, buf)
+	if err != nil {
+		c.Error(err)
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
 
-		contentLength := int64(len(bs))
-		contentType := "application/octet-stream"
+	if err := fw.Validate(); err != nil {
+		c.Error(err)
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
 
-		extraHeaders := map[string]string{
-			"Content-Disposition": `attachment; filename="` + filepath.Base(filename) + `"`,
-		}
-		r := bytes.NewReader(bs)
-		c.DataFromReader(http.StatusOK, contentLength, contentType, r, extraHeaders)
-	})
+	fwBytes, err := fw.Bytes()
+	if err != nil {
+		c.Error(err)
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
 
-	r.POST("/", func(c *gin.Context) {
-		buf, filename, n, err := getFileFromCtx(c)
-		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
-		if n < 512 || n > 512 {
-			c.String(http.StatusInternalServerError, "invalid bin size")
-			return
-		}
+	hexRows := strings.Builder{}
+	asciiColumns := strings.Builder{}
 
-		if buf[0] == 0x20 {
-			for i, b := range buf {
-				buf[i] = b ^ 0xff
-			}
+	pos := 0
+	offset := 0
+	width := 40
+
+	for _, bb := range fwBytes {
+		if pos == 0 {
+			hexRows.WriteString(`<div class="hexRow">` + "\n" +
+				"\t" + `<div class="addrColumn"><b>` + fmt.Sprintf("%03X", offset) + "</b></div>\n" +
+				"\t" + `<div class="hexColumns">` + "\n")
 		}
 
-		fw, err := cim.LoadBytes(filename, buf)
-		if err != nil {
-			c.Error(err)
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
-		if err := fw.Validate(); err != nil {
-			c.Error(err)
-			c.String(http.StatusBadRequest, err.Error())
-			return
-		}
-		bs, err := fw.Bytes()
-		if err != nil {
-			c.Error(err)
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
-		hexRow := strings.Builder{}
-		asciiColumns := strings.Builder{}
-
-		pos := 0
-		offset := 0
-		width := 40
-		for _, bb := range bs {
-			if pos == 0 {
-				hexRow.WriteString(`<div class="hexRow">` + "\n" +
-					"\t" + `<div class="addrColumn"><b>` + fmt.Sprintf("%03X", offset) + "</b></div>\n" +
-					"\t" + `<div class="hexColumns">` + "\n")
-			}
-
-			hexRow.WriteString(fmt.Sprintf("\t\t"+`<div class="hexByte byte-%d" data-i="%d">%02X</div>`+"\n", offset, offset, bb))
-			asciiColumns.WriteString(fmt.Sprintf(`<div class="asciiByte byte-%d" data-i="%d">%s</div>`+"\n", offset, offset, ps(bb)))
-			if pos == width {
-				hexRow.WriteString("</div>\n")
-				hexRow.WriteString(`<div class="asciiColumns">` + "\n")
-				hexRow.WriteString(asciiColumns.String())
-				hexRow.WriteString("</div>\n")
-				hexRow.WriteString("</div>\n")
-				asciiColumns.Reset()
-				pos = 0
-				offset++
-				continue
-			}
-			pos++
-			offset++
-		}
-		if pos <= width {
-			for i := pos; i <= width; i++ {
-				hexRow.WriteString(`<div class="fillByte">&nbsp;&nbsp;</div>` + "\n")
-			}
-			hexRow.WriteString("</div>")
-			hexRow.WriteString(`<div class="asciiColumns">` + "\n")
-			hexRow.WriteString(asciiColumns.String())
-			hexRow.WriteString("</div>\n")
-			hexRow.WriteString("</div>\n")
+		hexRows.WriteString(fmt.Sprintf("\t\t"+`<div class="hexByte byte-%d" data-i="%d">%02X</div>`+"\n", offset, offset, bb))
+		asciiColumns.WriteString(fmt.Sprintf(`<div class="asciiByte byte-%d" data-i="%d">%s</div>`+"\n", offset, offset, psafe(bb)))
+		if pos == width {
+			hexRows.WriteString("</div>\n")
+			hexRows.WriteString(`<div class="asciiColumns">` + "\n")
+			hexRows.WriteString(asciiColumns.String())
+			hexRows.WriteString("</div>\n")
+			hexRows.WriteString("</div>\n")
 			asciiColumns.Reset()
+			pos = 0
+			offset++
+			continue
 		}
+		pos++
+		offset++
+	}
+	// Handle the tail that didn't fill a full width
+	if pos <= width {
+		for i := pos; i <= width; i++ {
+			hexRows.WriteString(`<div class="fillByte">&nbsp;&nbsp;</div>` + "\n")
+		}
+		hexRows.WriteString("</div>")
+		hexRows.WriteString(`<div class="asciiColumns">` + "\n")
+		hexRows.WriteString(asciiColumns.String())
+		hexRows.WriteString("</div>\n")
+		hexRows.WriteString("</div>\n")
+		asciiColumns.Reset()
+	}
 
-		hexRow.WriteString("</div>")
+	hexRows.WriteString("</div>")
 
-		b64 := base64.StdEncoding.EncodeToString(bs)
+	b64 := base64.StdEncoding.EncodeToString(fwBytes)
 
-		c.HTML(http.StatusOK, "hex.tmpl", gin.H{
-			"filename": filepath.Base(filename),
-			"fw":       fw,
-			"B64":      b64,
-			"Hexview":  template.HTML(hexRow.String()),
-		})
+	c.HTML(http.StatusOK, "hex.tmpl", gin.H{
+		"filename": filepath.Base(filename),
+		"fw":       fw,
+		"B64":      b64,
+		"Hexview":  template.HTML(hexRows.String()),
 	})
+}
 
-	if err := r.Run(); err != nil {
-		log.Fatal(err)
-	} // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+func saveHandler(c *gin.Context) {
+	file := c.PostForm("file")
+	filename := c.PostForm("filename")
+
+	if file == "" || filename == "" {
+		c.String(http.StatusBadRequest, "missing file or filename")
+		return
+	}
+
+	b, err := base64.StdEncoding.DecodeString(file)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	xorBytes(b)
+
+	fw, err := cim.LoadBytes(filename, b)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	bs, err := fw.Bytes()
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	xorBytes(bs)
+
+	contentLength := int64(len(bs))
+	contentType := "application/octet-stream"
+
+	extraHeaders := map[string]string{
+		"Content-Disposition": `attachment; filename="` + filepath.Base(filename) + `"`,
+	}
+	c.DataFromReader(http.StatusOK, contentLength, contentType, bytes.NewReader(bs), extraHeaders)
 }
 
 func getFileFromCtx(c *gin.Context) ([]byte, string, int64, error) {
@@ -223,7 +225,15 @@ func getFileFromCtx(c *gin.Context) ([]byte, string, int64, error) {
 	return buf.Bytes(), header.Filename, n, nil
 }
 
-func ps(b byte) string {
+func xorBytes(b []byte) []byte {
+	for i, bb := range b {
+		b[i] = bb ^ 0xFF
+	}
+	return b
+}
+
+// sanitize binary so we don't print controll characters
+func psafe(b byte) string {
 	a := uint8(b)
 	if a == 0x00 {
 		return "·"

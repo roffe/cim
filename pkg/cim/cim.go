@@ -29,9 +29,13 @@ func Load(filename string) (*Bin, error) {
 		crc32:    fmt.Sprintf("%08x", crc32.Checksum(b, crc32.MakeTable(crc32.IEEE))),
 	}
 
-	for i, bb := range b {
-		b[i] = bb ^ 0xFF //xor byte with 0xFF
+	//xor bytes if magicByte is not 0x20
+	if b[0] != 0x20 {
+		for i, bb := range b {
+			b[i] = bb ^ 0xFF
+		}
 	}
+
 	if err := binstruct.UnmarshalBE(b, &fw); err != nil {
 		return nil, err
 	}
@@ -46,9 +50,12 @@ func LoadBytes(filename string, b []byte) (*Bin, error) {
 		md5:      fmt.Sprintf("%x", md5.Sum(b)),
 		crc32:    fmt.Sprintf("%08x", crc32.Checksum(b, crc32.MakeTable(crc32.IEEE))),
 	}
-	//xor bytes
-	for i, bb := range b {
-		b[i] = bb ^ 0xFF //xor byte with 0xFF
+
+	//xor bytes if magicByte is not 0x20
+	if b[0] != 0x20 {
+		for i, bb := range b {
+			b[i] = bb ^ 0xFF
+		}
 	}
 	// Unpack bytes into struct
 	if err := binstruct.UnmarshalBE(b, &fw); err != nil {
@@ -148,7 +155,7 @@ func (bin *Bin) CRC32() string {
 	return bin.crc32
 }
 
-// Return Serial sticker as uint64, stored as 5byte Binary-Coded Decimal
+// Return Serial sticker as uint64, stored as 5byte Binary-Coded Decimal (BCD)
 func (*Bin) ReadSN(r binstruct.Reader) (uint64, error) {
 	_, b, err := r.ReadBytes(5)
 	if err != nil {
@@ -157,10 +164,12 @@ func (*Bin) ReadSN(r binstruct.Reader) (uint64, error) {
 	return bcd.ToUint64(b), nil
 }
 
+// Return model year from VIN
 func (bin *Bin) ModelYear() string {
 	return fmt.Sprintf("%02s", bin.Vin.Data[9:10])
 }
 
+// Validate all checksums and known tests to ensure a healthy bin
 func (bin *Bin) Validate() error {
 	tests := []func() error{
 		bin.validateVin,
