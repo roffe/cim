@@ -44,10 +44,26 @@ func main() {
 
 }
 
+var templateHelpers = template.FuncMap{
+	"printHex": func(v interface{}) template.HTML {
+		return template.HTML(fmt.Sprintf("%X", v))
+	},
+	"print": func(v interface{}) template.HTML {
+		return template.HTML(fmt.Sprintf("%s", v))
+	},
+}
+
 func web() {
 	r := gin.Default()
 	r.MaxMultipartMemory = 1 << 20
-	r.LoadHTMLGlob("templates/*.tmpl")
+	//r.LoadHTMLGlob("templates/*.tmpl")
+
+	if tmpl, err := template.New("projectViews").Funcs(templateHelpers).ParseGlob("templates/*.tmpl"); err == nil {
+		r.SetHTMLTemplate(tmpl)
+	} else {
+		panic(err)
+	}
+
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "upload.tmpl", nil)
 	})
@@ -166,8 +182,9 @@ func web() {
 
 		c.HTML(http.StatusOK, "hex.tmpl", gin.H{
 			"filename": filepath.Base(filename),
+			"fw":       fw,
 			"B64":      b64,
-			"Bytes":    template.HTML(hexRow.String()),
+			"Hexview":  template.HTML(hexRow.String()),
 		})
 	})
 
