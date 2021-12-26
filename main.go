@@ -55,6 +55,12 @@ var templateHelpers = template.FuncMap{
 	"isoDate": func(t time.Time) template.HTML {
 		return template.HTML(t.Format(cim.IsoDate))
 	},
+	"boolChecked": func(b bool) template.HTML {
+		if b {
+			return template.HTML("checked")
+		}
+		return template.HTML("")
+	},
 }
 
 func web() {
@@ -153,7 +159,7 @@ func web() {
 		for _, bb := range bs {
 			if pos == 0 {
 				hexRow.WriteString(`<div class="hexRow">` + "\n" +
-					"\t" + `<div class="addrColumn">` + fmt.Sprintf("%03X", offset) + "</div>\n" +
+					"\t" + `<div class="addrColumn"><b>` + fmt.Sprintf("%03X", offset) + "</b></div>\n" +
 					"\t" + `<div class="hexColumns">` + "\n")
 			}
 

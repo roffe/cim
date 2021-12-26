@@ -27,49 +27,49 @@
         <div class="row">
             <div class="col">
                         <form>
-                        Vin:&nbsp;<input class="field byte-24 section-VIN" type="text" value="{{.fw.Vin.Data}}"><br>
-                        Model Year: <b>{{.fw.ModelYear}}</b><br><br>
-                        Pin:&nbsp;<input class="field byte-175 section-PIN" type="text" value="{{print .fw.Pin.Pin1}}"><br>
-                        <p class="field byte-4 section-SAS_OPTION">Steering Angle Sensor:&nbsp;<b>{{.fw.SasOpt}}</b></p><br>
-                        <p class="field byte-279 section-KEYS_COUNT">Programmed keys:&nbsp;<b>{{.fw.Keys.KeysKeysCount1}}</b></p>
+                        <b>Vin:</b> <input class="field byte-24 section-VIN" type="text" value="{{.fw.Vin.Data}}"><br>
+                        <b>Model Year:</b> {{.fw.ModelYear}}<br><br>
+                        <b>Pin:</b> <input class="field byte-175 section-PIN" type="text" value="{{printHex .fw.Pin.Pin1}}"><br>
+                        <b>Steering Angle Sensor:</b> <input class="field byte-4 section-SAS_OPTION" type="checkbox" id="sas_opt" name="sas_opt" {{boolChecked .fw.SasOpt}}><br><br>
+                        <b>Programmed keys:</b> <span class="field byte-279 section-KEYS_COUNT">{{.fw.Keys.KeysKeysCount1}}</b></span><br>
                         {{range $key, $val := .fw.Keys.Keys1}}
                         <b>{{$key}}</b> <input class="field byte-259 section-KEYS" type="text" value="{{printHex $val}}"><br>
                         {{end}}<br>
                         <b>Programming history:</b><br>
                         <ul>
-                        <li class="field byte-2 section-PROGRAMMING_DATE">Last programming date: <b>{{isoDate .fw.ProgrammingDate}}</b></li>
+                        <li><b>Last programming date:</b> <span class="field byte-2 section-PROGRAMMING_DATE">{{isoDate .fw.ProgrammingDate}}</span></li>
                         {{if eq .fw.Vin.SpsCount 0}}
                             <li><b>Factory programming only</b></li>
                         {{else}}
-                            <li class="field byte-54 section-SPS_COUNT" >SPS Counter: <b>{{.fw.Vin.SpsCount}}</b></li>
-                            <ul>
-                            {{range $key, $val := .fw.ProgrammingID}}
-                                <li class="field byte-57 section-PROGRAMMING_ID">{{$val}}</li>
+                            <li><b>SPS Counter:</b> <span class="field byte-54 section-SPS_COUNT">{{.fw.Vin.SpsCount}}</span></li>
+                            <ol>
+                            {{range $val := .fw.ProgrammingID}}
+                                <li><span class="field byte-57 section-PROGRAMMING_ID">{{$val}}</span></li>
                             {{end}}
-                            </ul>
+                            </ol>
                         {{end}}
                         </ul>
             </div>
             <div class="col">
                         <b>Remotes:</b><br>
-                        ISK High:&nbsp;<input type="text" value="{{printHex .fw.Keys.IskHI1}}"><br>
-                        ISK Low:&nbsp;<input type="text" value="{{printHex .fw.Keys.IskLO1}}"><br>
-                        PCF:&nbsp;<b>6732F2C5</b><br><br>
+                        <b>ISK High:</b> <input class="field byte-253 section-ISK_HI" type="text" value="{{printHex .fw.Keys.IskHI1}}"><br>
+                        <b>ISK Low:</b>&nbsp; <input class="field byte-257 section-ISK_LO" type="text" value="{{printHex .fw.Keys.IskLO1}}"><br>
+                        <b>PCF:</b> <i>6732F2C5</i><br><br>
                         <b>Sync:</b><br>
                         {{range $val := .fw.Sync.Data}}
-                        <input type="text" value="{{printHex $val}}">
+                        <input class="field byte-352 section-REMOTE_SYNC" type="text" value="{{printHex $val}}">
                         {{end}}<br>
                         <br>
-                        <p class="field byte-461 section-SN_STICKER">Serial sticker: <b>{{.fw.SnSticker}}</b><p>
-                        <p class="field byte-466 section-PROGRAMMING_FACTORY_DATE">Factory programming date: <b>{{isoDate .fw.ProgrammingFactoryDate}}</b></p>
+                        <b>Serial sticker:</b> <span class="field byte-461 section-SN_STICKER">{{.fw.SnSticker}}</span><p>
+                        <b>Factory programming date:</b> <span class="field byte-466 section-PROGRAMMING_FACTORY_DATE">{{isoDate .fw.ProgrammingFactoryDate}}</span></p>
                         <br>
                         <b>Part numbers:</b><br>
                         <ul>
-                        <li class="field byte-11 section-PN_SAAB1">End model (HW+SW): <b>{{.fw.PartNo1}}{{.fw.PartNo1Suffix}}</b></li>
-	                    <li class="field byte-21 section-PN_BASE1">Base model (HW+boot): <b>{{.fw.PnBase1}}{{.fw.PnBase1Suffix}}</b></li>
-	                    <li class="field byte-472 section-PN_DELPHI">Delphi part number: <b>{{.fw.DelphiPN}}</b></li>
-	                    <li class="field byte-478 section-PN_SAAB2">SAAB part number: <b>{{.fw.PartNo}}</b></li>
-	                    <li class="field byte-17 section-CONFIGURATION_VERSION">Configuration Version: <b>{{.fw.ConfigurationVersion}}</b></li>
+                        <li>End model (HW+SW):&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-11 section-PN_SAAB1" value="{{.fw.PartNo1}}{{.fw.PartNo1Suffix}}"></li>
+	                    <li>Base model (HW+boot):&nbsp; <input class="field byte-21 section-PN_BASE1" value="{{.fw.PnBase1}}{{.fw.PnBase1Suffix}}"></li>
+	                    <li>Delphi part number:&nbsp;&nbsp;&nbsp; <input class="field byte-472 section-PN_DELPHI" value="{{.fw.DelphiPN}}"></li>
+	                    <li>SAAB part number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-478 section-PN_SAAB2" value="{{.fw.PartNo}}"></li>
+	                    <li>Configuration Version: <input class="field byte-17 section-CONFIGURATION_VERSION" value="{{.fw.ConfigurationVersion}}"></li>
                         </ul>
                     </form>               
             </div>
