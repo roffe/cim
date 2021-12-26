@@ -17,7 +17,7 @@ func (fw *Bin) Dump() {
 	fmt.Println("")
 
 	fmt.Printf("Model Year: %02s\n", fw.Vin.Data[9:10])
-	fmt.Printf("Steering Angle Sensor: %t\n", fw.SasOption)
+	fmt.Printf("Steering Angle Sensor: %t\n", fw.SasOpt())
 	fmt.Println("")
 
 	fmt.Println("Programmed keys:", fw.Keys.KeysKeysCount1)
@@ -31,7 +31,7 @@ func (fw *Bin) Dump() {
 	fmt.Println("Remotes:")
 	fmt.Printf("PSK High: %X\n", fw.PSK.High)
 	fmt.Printf("PSK Low:  %X\n", fw.PSK.Low)
-	fmt.Printf("PCF: %s\n", "TODO")
+	fmt.Printf("PCF: %s\n", "6732F2C5")
 	fmt.Printf("Sync: ")
 	for _, v := range fw.Sync.Data {
 		fmt.Printf("%X ", v)
@@ -56,10 +56,10 @@ func (fw *Bin) Dump() {
 	fmt.Println()
 
 	fmt.Println("Part numbers:")
-	fmt.Printf("- End model (HW+SW): %d%s\n", fw.PnSAAB1, fw.PnSAAB1_2)
-	fmt.Printf("- Base model (HW+boot): %d%s\n", fw.PnBase1, fw.PnBase1_2)
-	fmt.Printf("- Delphi part number: %d\n", fw.PnDelphi)
-	fmt.Printf("- SAAB part number (factory?): %d\n", fw.PnSAAB2)
+	fmt.Printf("- End model (HW+SW): %d%s\n", fw.PartNo1, fw.PartNo1Suffix)
+	fmt.Printf("- Base model (HW+boot): %d%s\n", fw.PnBase1, fw.PnBase1Suffix)
+	fmt.Printf("- Delphi part number: %d\n", fw.DelphiPN)
+	fmt.Printf("- SAAB part number: %d\n", fw.PartNo)
 	fmt.Printf("- Configuration Version: %d\n", fw.ConfigurationVersion)
 	fmt.Println()
 }

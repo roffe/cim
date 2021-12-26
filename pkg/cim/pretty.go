@@ -13,16 +13,22 @@ import (
 func (fw *Bin) Pretty() {
 	t := s("CIM Dump analyser: " + filepath.Base(fw.filename))
 	t.AppendRows([]table.Row{
-		{"MD5", fw.MD5(), "Crc32", fw.CRC32()},
-		{"VIN", fw.Vin.Data, "Model Year", fmt.Sprintf("%02s", fw.Vin.Data[9:10])},
-		{"PIN", fmt.Sprintf("%s", fw.Pin.Pin1), "Steering Angle Sensor", fw.SasOption},
-		{},
+		{"MD5", fw.MD5()},
+		{"Crc32", fw.CRC32()},
+		{"VIN", fw.Vin.Data},
+		{"Model Year", fw.Vin.Data[9:10]},
+		{"Steering Angle Sensor", fw.SasOption},
 	})
 	t.Render()
 
+	pin := s("Pin")
+	pin.AppendHeader(table.Row{"#", "Bank 1", "Bank 2"})
+	pin.AppendRow(table.Row{0, fmt.Sprintf("%X", fw.Pin.Pin1), fmt.Sprintf("%X", fw.Pin.Pin2)})
+	pin.Render()
+
 	keys := s(fmt.Sprintf("Programmed keys: %d", fw.Keys.KeysKeysCount1))
 	keys.AppendHeader(table.Row{
-		"No", "Bank1", "Bank2",
+		"#", "Bank 1", "Bank 2",
 	})
 	for i, k := range fw.Keys.Keys1 {
 		keys.AppendRow(table.Row{
@@ -64,10 +70,10 @@ func (fw *Bin) Pretty() {
 
 	pn := s("Part numbers")
 	pn.AppendRows([]table.Row{
-		{"End model (HW+SW)", fmt.Sprintf("%d%s", fw.PnSAAB1, fw.PnSAAB1_2)},
-		{"Base model (HW+boot)", fmt.Sprintf("%d%s", fw.PnBase1, fw.PnBase1_2)},
-		{"Delphi part number", fw.PnDelphi},
-		{"SAAB part number (factory?)", fw.PnSAAB2},
+		{"End model (HW+SW)", fmt.Sprintf("%d%s", fw.PartNo1, fw.PartNo1Suffix)},
+		{"Base model (HW+boot)", fmt.Sprintf("%d%s", fw.PnBase1, fw.PnBase1Suffix)},
+		{"Delphi part number", fw.DelphiPN},
+		{"SAAB part number", fw.PartNo},
 		{"Configuration Version:", fw.ConfigurationVersion},
 	})
 	pn.Render()
