@@ -27,24 +27,24 @@
         <div class="row">
             <div class="col">
                         <form>
-                        Vin:&nbsp;<input type="text" value="{{.fw.Vin.Data}}"><br>
+                        Vin:&nbsp;<input class="field byte-24 section-VIN" type="text" value="{{.fw.Vin.Data}}"><br>
                         Model Year: <b>{{.fw.ModelYear}}</b><br><br>
-                        Pin:&nbsp;<input type="text" value="{{print .fw.Pin.Pin1}}"><br>
-                        Steering Angle Sensor:&nbsp;<b>{{.fw.SasOpt}}</b><br><br>
-                        Programmed keys:&nbsp;<b>{{.fw.Keys.KeysKeysCount1}}</b><br>
+                        Pin:&nbsp;<input class="field byte-175 section-PIN" type="text" value="{{print .fw.Pin.Pin1}}"><br>
+                        <p class="field byte-4 section-SAS_OPTION">Steering Angle Sensor:&nbsp;<b>{{.fw.SasOpt}}</b></p><br>
+                        <p class="field byte-279 section-KEYS_COUNT">Programmed keys:&nbsp;<b>{{.fw.Keys.KeysKeysCount1}}</b></p>
                         {{range $key, $val := .fw.Keys.Keys1}}
-                        <b>{{$key}}</b> <input type="text" value="{{printHex $val}}"><br>
+                        <b>{{$key}}</b> <input class="field byte-259 section-KEYS" type="text" value="{{printHex $val}}"><br>
                         {{end}}<br>
                         <b>Programming history:</b><br>
                         <ul>
-                        <li>Last programming date: <b>{{isoDate .fw.ProgrammingDate}}</b></li>
+                        <li class="field byte-2 section-PROGRAMMING_DATE">Last programming date: <b>{{isoDate .fw.ProgrammingDate}}</b></li>
                         {{if eq .fw.Vin.SpsCount 0}}
                             <li><b>Factory programming only</b></li>
                         {{else}}
-                            <li>SPS Counter: <b>{{.fw.Vin.SpsCount}}</b></li>
+                            <li class="field byte-54 section-SPS_COUNT" >SPS Counter: <b>{{.fw.Vin.SpsCount}}</b></li>
                             <ul>
-                            {{range $val := .fw.ProgrammingID}}
-                                <li>{{$val}}</li>
+                            {{range $key, $val := .fw.ProgrammingID}}
+                                <li class="field byte-57 section-PROGRAMMING_ID">{{$val}}</li>
                             {{end}}
                             </ul>
                         {{end}}
@@ -60,16 +60,16 @@
                         <input type="text" value="{{printHex $val}}">
                         {{end}}<br>
                         <br>
-                        Serial sticker: <b>{{.fw.SnSticker}}</b><br>
-                        Factory programming date: <b>{{isoDate .fw.ProgrammingFactoryDate}}</b><br>
+                        <p class="field byte-461 section-SN_STICKER">Serial sticker: <b>{{.fw.SnSticker}}</b><p>
+                        <p class="field byte-466 section-PROGRAMMING_FACTORY_DATE">Factory programming date: <b>{{isoDate .fw.ProgrammingFactoryDate}}</b></p>
                         <br>
                         <b>Part numbers:</b><br>
                         <ul>
-                        <li>End model (HW+SW): <b>{{.fw.PartNo1}}{{.fw.PartNo1Suffix}}</b></li>
-	                    <li>Base model (HW+boot): <b>{{.fw.PnBase1}}{{.fw.PnBase1Suffix}}</b></li>
-	                    <li>Delphi part number: <b>{{.fw.DelphiPN}}</b></li>
-	                    <li>SAAB part number: <b>{{.fw.PartNo}}</b></li>
-	                    <li>Configuration Version: <b>{{.fw.ConfigurationVersion}}</b></li>
+                        <li class="field byte-11 section-PN_SAAB1">End model (HW+SW): <b>{{.fw.PartNo1}}{{.fw.PartNo1Suffix}}</b></li>
+	                    <li class="field byte-21 section-PN_BASE1">Base model (HW+boot): <b>{{.fw.PnBase1}}{{.fw.PnBase1Suffix}}</b></li>
+	                    <li class="field byte-472 section-PN_DELPHI">Delphi part number: <b>{{.fw.DelphiPN}}</b></li>
+	                    <li class="field byte-478 section-PN_SAAB2">SAAB part number: <b>{{.fw.PartNo}}</b></li>
+	                    <li class="field byte-17 section-CONFIGURATION_VERSION">Configuration Version: <b>{{.fw.ConfigurationVersion}}</b></li>
                         </ul>
                     </form>               
             </div>
@@ -97,7 +97,7 @@
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <script type="application/javascript">
-        $('.hexByte, .asciiByte').hover(function () {
+        $('.hexByte, .asciiByte, .field').hover(function () {
             var i = $(this).data('i');
             var section = $(this).data('section');
             if (section) {
