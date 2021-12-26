@@ -9,7 +9,7 @@ require (
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef // indirect
-	github.com/ghostiam/binstruct v1.0.1 // indirect
+	github.com/ghostiam/binstruct v1.2.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.7.7 // indirect
 	github.com/go-openapi/errors v0.19.8 // indirect

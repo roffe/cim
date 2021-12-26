@@ -2,37 +2,9 @@ package cim
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
-
-	"github.com/ghostiam/binstruct"
 )
 
-type Keys struct {
-	IskHI1         []byte   `bin:"len:4"`
-	IskLO1         []byte   `bin:"len:2"`
-	Keys1          [][]byte `bin:"len:5,[len:4]"`
-	KeysKeysCount1 uint8    `bin:"len:1"`
-	KeysConstant1  []byte   `bin:"len:7"`
-	KeyErrors1     uint8    `bin:"len:1"`
-	Checksum1      uint16   `bin:"Uint16l,len:2"`
-	IskHI2         []byte   `bin:"len:4"`
-	IskLO2         []byte   `bin:"len:2"`
-	Keys2          [][]byte `bin:"len:5,[len:4]"`
-	KeysKeysCount2 uint8    `bin:"len:1"`
-	KeysConstant2  []byte   `bin:"len:7"`
-	KeyErrors2     uint8    `bin:"len:1"`
-	Checksum2      uint16   `bin:"Uint16l,len:2"` // CRC16 MCRF4XX
-}
-
-// Uint16l returns a uint16 read as little endian
-func (*Keys) Uint16l(r binstruct.Reader) (uint16, error) {
-	var out uint16
-	if err := binary.Read(r, binary.LittleEndian, &out); err != nil {
-		return 0, err
-	}
-	return out, nil
-}
 func (bin *Bin) validateKeys() error {
 	k := bin.Keys
 	if k.Checksum1 != k.Checksum2 {

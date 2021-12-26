@@ -8,6 +8,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/ghostiam/binstruct v1.0.1 h1:sg7Hi5c5b0noCDfRQpx3K2x9HLJYRafKnQRif7Orkek=
 github.com/ghostiam/binstruct v1.0.1/go.mod h1:+NZwEDbcfME8MhF7nQRjAZV4U00c6XpNuk+nkvOxzvo=
+github.com/ghostiam/binstruct v1.2.1 h1:sAXuA05hW1s8s2Vkub/8MaSQPYSBxUPGhUGWzSEsjjE=
+github.com/ghostiam/binstruct v1.2.1/go.mod h1:4xldhq82h6CxIBFSARyUs4Yoi8P/Mj24rkxyaGyZLJ4=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
 github.com/gin-contrib/sse v0.1.0/go.mod h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI=
 github.com/gin-gonic/gin v1.7.7 h1:3DoBmSbJbZAWqXJC3SLjAPfutPJJRN1U5pALB7EeTTs=
