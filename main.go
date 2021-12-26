@@ -101,6 +101,12 @@ func web() {
 			return
 		}
 
+		if buf[0] == 0x20 {
+			for i, b := range buf {
+				buf[i] = b ^ 0xff
+			}
+		}
+
 		fw, err := cim.LoadBytes(filename, buf)
 		if err != nil {
 			c.Error(err)
