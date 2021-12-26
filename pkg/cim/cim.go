@@ -17,6 +17,7 @@ var tableTheme = table.StyleColoredDark
 
 const isoDate = "2006-01-02"
 
+// Load a file from disk
 func Load(filename string) (*Bin, error) {
 	b, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -38,19 +39,21 @@ func Load(filename string) (*Bin, error) {
 	return &fw, nil
 }
 
+// Load a byte slice as a named binary
 func LoadBytes(filename string, b []byte) (*Bin, error) {
 	fw := Bin{
 		filename: filename,
 		md5:      fmt.Sprintf("%x", md5.Sum(b)),
 		crc32:    fmt.Sprintf("%08x", crc32.Checksum(b, crc32.MakeTable(crc32.IEEE))),
 	}
+	//xor bytes
 	for i, bb := range b {
 		b[i] = bb ^ 0xFF //xor byte with 0xFF
 	}
+	// Unpack bytes into struct
 	if err := binstruct.UnmarshalBE(b, &fw); err != nil {
 		return nil, err
 	}
-
 	return &fw, nil
 }
 
@@ -92,24 +95,6 @@ type Bin struct {
 	PSK                    PSK           // 14 bytes
 	UnknownData10          UnknownData10 `bin:"len:12"`
 	EOF                    byte          `bin:"len:1"` //0x00
-}
-
-type Pin struct {
-	Pin1         []byte `bin:"len:4"` // LE
-	Pin1Unknown  []byte `bin:"len:4"`
-	Pin1Checksum uint16 `bin:"Uint16l,len:2"`
-	Pin2         []byte `bin:"len:4"` // LE
-	Pin2Unknown  []byte `bin:"len:4"`
-	Pin2Checksum uint16 `bin:"Uint16l,len:2"`
-}
-
-// Uint16l returns a uint16 read as little endian
-func (*Pin) Uint16l(r binstruct.Reader) (uint16, error) {
-	var out uint16
-	if err := binary.Read(r, binary.LittleEndian, &out); err != nil {
-		return 0, err
-	}
-	return out, nil
 }
 
 // Uint32l returns a uint32 read as little endian
@@ -170,6 +155,10 @@ func (*Bin) ReadSN(r binstruct.Reader) (uint64, error) {
 		return 0, nil
 	}
 	return bcd.ToUint64(b), nil
+}
+
+func (bin *Bin) ModelYear() string {
+	return fmt.Sprintf("%02s", bin.Vin.Data[9:10])
 }
 
 func (bin *Bin) Validate() error {
