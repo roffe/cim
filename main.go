@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/roffe/cim/pkg/cim"
@@ -50,6 +51,9 @@ var templateHelpers = template.FuncMap{
 	},
 	"print": func(v interface{}) template.HTML {
 		return template.HTML(fmt.Sprintf("%s", v))
+	},
+	"isoDate": func(t time.Time) template.HTML {
+		return template.HTML(t.Format(cim.IsoDate))
 	},
 }
 
@@ -140,6 +144,7 @@ func web() {
 
 		pos := 0
 		offset := 0
+		width := 40
 		for _, bb := range bs {
 			if pos == 0 {
 				hexRow.WriteString(`
@@ -152,7 +157,7 @@ func web() {
 
 			hexRow.WriteString(fmt.Sprintf(`<div class="hexByte byte-%d" data-i="%d">%02X</div>`+"\n", offset, offset, bb))
 			asciiColumns.WriteString(fmt.Sprintf(`<div class="asciiByte byte-%d" data-i="%d">%s</div>`+"\n", offset, offset, ps(bb)))
-			if pos == 26 {
+			if pos == width {
 				hexRow.WriteString("</div>")
 				hexRow.WriteString(`<div class="asciiColumns">`)
 				hexRow.WriteString(asciiColumns.String())
@@ -166,7 +171,7 @@ func web() {
 			pos++
 			offset++
 		}
-		if pos <= 26 {
+		if pos <= width {
 			hexRow.WriteString(`<div class="fillByte">&nbsp;&nbsp;</div>`)
 			hexRow.WriteString("</div>")
 			hexRow.WriteString(`<div class="asciiColumns">`)

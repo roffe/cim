@@ -40,7 +40,7 @@ func (fw *Bin) Dump() {
 	fmt.Println()
 
 	fmt.Println("Programming history:")
-	fmt.Printf("- Last programming date: %s\n", fw.ProgrammingDate.Format(isoDate))
+	fmt.Printf("- Last programming date: %s\n", fw.ProgrammingDate.Format(IsoDate))
 	if fw.Vin.SpsCount == 0 {
 		fmt.Println("- Factory programming only")
 	} else {
@@ -52,7 +52,7 @@ func (fw *Bin) Dump() {
 	fmt.Println()
 
 	fmt.Printf("Serial sticker: %d\n", fw.SnSticker)
-	fmt.Printf("Factory programming date: %s\n", fw.ProgrammingFactoryDate.Format(isoDate))
+	fmt.Printf("Factory programming date: %s\n", fw.ProgrammingFactoryDate.Format(IsoDate))
 	fmt.Println()
 
 	fmt.Println("Part numbers:")

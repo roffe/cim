@@ -2,154 +2,97 @@
 <html lang="en">
 
 <head>
-    <title>CIM Dump view</title>
+    <title>CIM Dump Editor</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{template "hexstyle.tmpl"}}
 
-    <style>
-        .content {
-            font-family: "Courier New", monospace;
-            font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            flex-wrap: nowrap;
-        }
-
-        .hexRow {
-            display: flex;
-            width: 100%;
-        }
-
-        /*.hexColumnAddr {}*/
-
-        .hexColumns {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            /*justify-content: space-evenly;*/
-            /*width: 500px;*/
-        }
-
-
-        .asciiColumns {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            /*justify-content: space-evenly;*/
-            /*width: 300px;*/
-            border-left: 1px solid #ccc;
-            padding-left: 5px;
-            margin-left: 5px;
-        }
-
-        .hexColumns .hexByte,
-        .hexColumns .fillByte {
-            padding: 0 2px;
-        }
-
-        .asciiColumns .asciiByte {
-            padding: 0 1px;
-        }
-
-        .addrColumn {
-            border-right: 1px solid #ccc;
-            padding-right: 5px;
-            margin-right: 5px;
-        }
-
-        .section {
-            background: #8fbfe9;
-        }
-
-        .section.confirmed {
-            background: #8fe9bf;
-        }
-
-        .hexColumns .hover {
-            background: #ddd;
-        }
-
-        .asciiColumns .hover {
-            background: #ddd;
-        }
-
-        .hoverSection {
-            background: #6085e7;
-            color: #fff;
-        }
-
-        .hoverSection.confirmed {
-            background: #65e760;
-            color: #fff;
-        }
-
-        .checksum {
-            color: #f59205;
-        }
-
-        .checksum.confirmed {
-            color: #ff0000;
-        }
-    </style>
 </head>
 
 <body>
-    <h1>CIM Dump View</h1>
-    <div class="content">
-        <h6><a href="/"><button>Back</button></a></burron>{{.filename}}</h6>
-        <hr>
-        <div>
-            <form>
-                <table>
-                    <tr>
-                        <td>
-                            MD5:&nbsp;<b>{{.fw.MD5}}</b><br>
-                            CRC32:&nbsp;<b>{{.fw.CRC32}}</b><br>
-                            Vin:&nbsp;<input type="text" value="{{.fw.Vin.Data}}"><br>
-                            Model Year: <b>{{.fw.ModelYear}}</b><br>
-                            Pin:&nbsp;<input type="text" value="{{print .fw.Pin.Pin1}}"><br>
-                            Steering Angle Sensor:&nbsp;<b>{{.fw.SasOpt}}</b><br>
-                            Programmed keys:&nbsp;<b>{{.fw.Keys.KeysKeysCount1}}</b><br>
-                            {{range $key, $val := .fw.Keys.Keys1}}
-                            <b>{{$key}}</b> <input type="text" value="{{printHex $val}}"><br>
-                            {{end}}<br>
-                        </td>
-                        <td>
-                            <b>Remotes:</b><br>
-                            ISK High:&nbsp;<input type="text" value="{{printHex .fw.Keys.IskHI1}}"><br>
-                            ISK Low:&nbsp;<input type="text" value="{{printHex .fw.Keys.IskLO1}}"><br>
-                            PCF:&nbsp;<b>6732F2C5</b><br>
-                            Sync:&nbsp;
-                            {{range $val := .fw.Sync.Data}}
-                            <input type="text" value="{{printHex $val}}">
-                            {{end}}<br>
-                            <br>
-                            Programming history:<br>
-                            <br>
-                            Serial sticker: {{.fw.SnSticker}}
-                            <br>
-                            Part numbers:<br>
-                        </td>
-                    </tr>
-                </table>
-            </form>
+    
+    <div class="container content">
+        <div class="row">
+            <div class="col">
+            <h1>CIM Dump Editor</h1>
+                <h6>{{.filename}}&nbsp;<a href="/"><button>Back</button></a></h6>
+                MD5: <b>{{.fw.MD5}}</b> CRC32: <b>{{.fw.CRC32}}</b>
+            </div>
         </div>
-
         <hr>
-        <div class="dump_contents">
-            {{.Hexview}}
+        <div class="row">
+            <div class="col">
+                        <form>
+                        Vin:&nbsp;<input type="text" value="{{.fw.Vin.Data}}"><br>
+                        Model Year: <b>{{.fw.ModelYear}}</b><br><br>
+                        Pin:&nbsp;<input type="text" value="{{print .fw.Pin.Pin1}}"><br>
+                        Steering Angle Sensor:&nbsp;<b>{{.fw.SasOpt}}</b><br><br>
+                        Programmed keys:&nbsp;<b>{{.fw.Keys.KeysKeysCount1}}</b><br>
+                        {{range $key, $val := .fw.Keys.Keys1}}
+                        <b>{{$key}}</b> <input type="text" value="{{printHex $val}}"><br>
+                        {{end}}<br>
+                        <b>Programming history:</b><br>
+                        <ul>
+                        <li>Last programming date: <b>{{isoDate .fw.ProgrammingDate}}</b></li>
+                        {{if eq .fw.Vin.SpsCount 0}}
+                            <li><b>Factory programming only</b></li>
+                        {{else}}
+                            <li>SPS Counter: <b>{{.fw.Vin.SpsCount}}</b></li>
+                            <ul>
+                            {{range $val := .fw.ProgrammingID}}
+                                <li>{{$val}}</li>
+                            {{end}}
+                            </ul>
+                        {{end}}
+                        </ul>
+            </div>
+            <div class="col">
+                        <b>Remotes:</b><br>
+                        ISK High:&nbsp;<input type="text" value="{{printHex .fw.Keys.IskHI1}}"><br>
+                        ISK Low:&nbsp;<input type="text" value="{{printHex .fw.Keys.IskLO1}}"><br>
+                        PCF:&nbsp;<b>6732F2C5</b><br><br>
+                        <b>Sync:</b><br>
+                        {{range $val := .fw.Sync.Data}}
+                        <input type="text" value="{{printHex $val}}">
+                        {{end}}<br>
+                        <br>
+                        Serial sticker: <b>{{.fw.SnSticker}}</b><br>
+                        Factory programming date: <b>{{isoDate .fw.ProgrammingFactoryDate}}</b><br>
+                        <br>
+                        <b>Part numbers:</b><br>
+                        <ul>
+                        <li>End model (HW+SW): <b>{{.fw.PartNo1}}{{.fw.PartNo1Suffix}}</b></li>
+	                    <li>Base model (HW+boot): <b>{{.fw.PnBase1}}{{.fw.PnBase1Suffix}}</b></li>
+	                    <li>Delphi part number: <b>{{.fw.DelphiPN}}</b></li>
+	                    <li>SAAB part number: <b>{{.fw.PartNo}}</b></li>
+	                    <li>Configuration Version: <b>{{.fw.ConfigurationVersion}}</b></li>
+                        </ul>
+                    </form>               
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <a href="#"><button>Update</button></a></button>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col">
+                <div class="dump_contents">
+                    {{.Hexview}}
+                    <form action="/save" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="filename" id="filename" value="{{.filename}}">
+                        <input type="hidden" name="file" id="file" value="{{.B64}}">
+                        <input type="submit" value="Save" name="submit">
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-    <hr>
-    <form action="/save" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="filename" id="filename" value="{{.filename}}">
-        <input type="hidden" name="file" id="file" value="{{.B64}}">
-        <input type="submit" value="Save" name="submit">
-    </form>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
@@ -172,467 +115,7 @@
             }
         });
 
-        var sections = [
-            {
-                id: 'CONST_0',
-                start: 0x0,
-                length: 1
-            },
-            {
-                id: 'CONST_1',
-                start: 0xf3,
-                length: 8
-            },
-            {
-                id: 'CHECKSUM_CONST_1',
-                start: 0xfb,
-                length: 2,
-                checksum: true,
-                type: "uint16"
-            },
-            {
-                id: 'VIN',
-                start: 0x1B,
-                length: 17,
-                confirmed: true,
-                type: "string"
-            },
-            {
-                id: 'VIN_UNKNOWN_VALUE',
-                start: 0x2C,
-                length: 1
-            },
-            {
-                id: 'VIN_UNKNOWN',
-                start: 0x2D,
-                length: 9
-            },
-            {
-                id: 'CHECKSUM_VIN',
-                start: 0x37,
-                length: 2,
-                checksum: true,
-                confirmed: true
-            },
-            {
-                id: 'PIN',
-                start: 0xAF,
-                length: 4,
-                confirmed: true
-            },
-            {
-                id: 'PIN',
-                start: 0xB9,
-                length: 4,
-                confirmed: true
-            },
-            {
-                id: 'PIN_UNKNOWN',
-                start: 0xB3,
-                length: 4,
-            },
-            {
-                id: 'PIN_UNKNOWN',
-                start: 0xBD,
-                length: 4,
-            },
-            {
-                id: 'CHECKSUM_PIN',
-                start: 0xb7,
-                length: 2,
-                checksum: true,
-                confirmed: true
-            },
-            {
-                id: 'CHECKSUM_PIN',
-                start: 0xc1,
-                length: 2,
-                checksum: true,
-                confirmed: true
-            },
-            {
-                id: 'KEYS',
-                start: 0x103,
-                length: 20,
-                confirmed: true
-            },
-            {
-                id: 'KEYS',
-                start: 0x128,
-                length: 20,
-                confirmed: true
-            },
-            {
-                id: 'KEY_ERRORS',
-                start: 0x11f,
-                length: 1,
-                confirmed: true
-            },
-            {
-                id: 'KEY_ERRORS',
-                start: 0x144,
-                length: 1,
-                confirmed: true
-            },
-            {
-                id: 'KEYS_UNKNOWN',
-                start: 0x118,
-                length: 7
-            },
-            {
-                id: 'KEYS_UNKNOWN',
-                start: 0x13D,
-                length: 7
-            },
-            {
-                id: 'KEYS_COUNT',
-                start: 0x117,
-                length: 1,
-                confirmed: true
-            },
-            {
-                id: 'KEYS_COUNT',
-                start: 0x13C,
-                length: 1,
-                confirmed: true
-            },
-            {
-                id: 'ISK_HI',
-                start: 0xFD,
-                length: 4,
-                confirmed: true
-            },
-            {
-                id: 'ISK_LO',
-                start: 0x101,
-                length: 2,
-                confirmed: true
-            },
-            {
-                id: 'ISK_HI',
-                start: 0x122,
-                length: 4,
-                confirmed: true
-            },
-            {
-                id: 'ISK_LO',
-                start: 0x126,
-                length: 2,
-                confirmed: true
-            },
-            {
-                id: 'CHECKSUM_KEYS',
-                start: 0x120,
-                length: 2,
-                checksum: true,
-                confirmed: true
-            },
-            {
-                id: 'CHECKSUM_KEYS',
-                start: 0x145,
-                length: 2,
-                checksum: true,
-                confirmed: true
-            },
-            {
-                id: 'PSK_LOW',
-                start: 0x1e5,
-                length: 4,
-                confirmed: true
-            },
-            {
-                id: 'PSK_HI',
-                start: 0x1e9,
-                length: 2,
-                confirmed: true
-            },
-            {
-                id: 'PSK_UNKNOWN',
-                start: 0x1eb,
-                length: 6
-            },
-            {
-                id: 'CHECKSUM_PSK',
-                start: 0x1f1,
-                length: 2,
-                checksum: true,
-                confirmed: true
-            },
-            {
-                id: 'REMOTE_SYNC',
-                start: 0x160,
-                length: 20,
-                confirmed: true
-            },
-            {
-                id: 'CHECKSUM_REMOTE_SYNC',
-                start: 0x174,
-                length: 2,
-                checksum: true,
-                confirmed: true
-            },
-            {
-                id: 'PROGRAMMING_DATE',
-                start: 0x1,
-                length: 3,
-                confirmed: true,
-                type: "BCD yymmdd"
-            },
-            {
-                id: 'PROGRAMMING_ID',
-                start: 0x39,
-                length: 10 * 3,
-                confirmed: true
-            },
-            {
-                id: 'SN_STICKER',
-                start: 0x1cd,
-                length: 5,
-                confirmed: true,
-                type: "5 byte BCD uint64"
-            },
-            {
-                id: 'PN_SAAB1',
-                start: 0xb,
-                length: 6
-            },
-            {
-                id: 'PN_BASE1',
-                start: 0x15,
-                length: 6
-            },
-            {
-                id: 'CONFIGURATION_VERSION',
-                start: 0x11,
-                length: 4,
-                confirmed: true,
-                type: "uint32"
-            },
-            {
-                id: 'PN_DELPHI',
-                start: 0x1d8,
-                length: 4,
-                confirmed: true
-            },
-            {
-                id: 'PN_SAAB2',
-                start: 0x1de,
-                length: 4
-            },
-            {
-                id: 'PROGRAMMING_FACTORY_DATE',
-                start: 0x1d2,
-                length: 3,
-                type: "Reversed BCD date ddmmyy"
-            },
-            {
-                id: 'SAS_OPTION',
-                start: 0x4,
-                length: 1,
-                type: "uint8"
-            },
-            {
-                id: 'SPS_COUNT',
-                start: 0x36,
-                length: 1,
-                confirmed: true,
-                type: "uint8"
-            },
-            {
-                id: 'UNKNOWN_DATA_1',
-                start: 0xc7,
-                length: 20
-            },
-            {
-                id: 'UNKNOWN_DATA_1',
-                start: 0xdd,
-                length: 20
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_1',
-                start: 0xf1,
-                length: 2,
-                checksum: true
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_1',
-                start: 0xdb,
-                length: 2,
-                checksum: true
-            },
-            {
-                id: 'UNKNOWN_DATA_2',
-                start: 0x1bf,
-                length: 5
-            },
-            {
-                id: 'UNKNOWN_DATA_2',
-                start: 0x1c6,
-                length: 5
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_2',
-                start: 0x1c4,
-                length: 2,
-                checksum: true
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_2',
-                start: 0x1cb,
-                length: 2,
-                checksum: true
-            },
-
-
-            {
-                id: 'UNKNOWN_DATA_3',
-                start: 0x057,
-                length: 42
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_3',
-                start: 0x081,
-                length: 2,
-                checksum: true
-            },
-            {
-                id: 'UNKNOWN_DATA_3',
-                start: 0x083,
-                length: 42
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_3',
-                start: 0x0ad,
-                length: 2,
-                checksum: true
-            },
-
-
-            {
-                id: 'UNKNOWN_DATA_4',
-                start: 0x0c3,
-                length: 2
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_4',
-                start: 0x0c5,
-                length: 2,
-                checksum: true
-            },
-
-            {
-                id: 'UNKNOWN_DATA_5',
-                start: 0x147,
-                length: 23
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_5',
-                start: 0x15e,
-                length: 2,
-                checksum: true
-            },
-
-            {
-                id: 'UNKNOWN_DATA_6',
-                start: 0x176,
-                length: 20
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_6',
-                start: 0x18a,
-                length: 2,
-                checksum: true
-            },
-            {
-                id: 'UNKNOWN_DATA_6',
-                start: 0x18c,
-                length: 20
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_6',
-                start: 0x1a0,
-                length: 2,
-                checksum: true
-            },
-            {
-                id: 'UNKNOWN_DATA_7',
-                start: 0x1a9,
-                length: 5
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_7',
-                start: 0x1ae,
-                length: 2,
-                checksum: true
-            },
-            {
-                id: 'UNKNOWN_DATA_7',
-                start: 0x1a2,
-                length: 5
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_7',
-                start: 0x1a7,
-                length: 2,
-                checksum: true
-            },
-
-
-            {
-                id: 'UNKNOWN_DATA_8',
-                start: 0x1b0,
-                length: 6
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_8',
-                start: 0x1b6,
-                length: 2,
-                checksum: true
-            },
-
-            {
-                id: 'UNKNOWN_DATA_9',
-                start: 0x1b8,
-                length: 5
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_9',
-                start: 0x1bd,
-                length: 2,
-                checksum: true
-            },
-
-            {
-                id: 'UNKNOWN_DATA_10',
-                start: 0x1f3,
-                length: 4
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_10',
-                start: 0x1f7,
-                length: 2,
-                checksum: true
-            },
-
-
-            {
-                id: 'UNKNOWN_DATA_10',
-                start: 0x1f9,
-                length: 4
-            },
-            {
-                id: 'CHECKSUM_UNKNOWN_DATA_10',
-                start: 0x1fd,
-                length: 2,
-                checksum: true
-            },
-            {
-                id: 'END_OF_FILE',
-                start: 0x1ff,
-                length: 1,
-                confirmed: true
-            },
-        ];
+        {{template "sections.tmpl"}}
 
         for (let i = 0; i < sections.length; i++) {
             let section = sections[i];
@@ -645,13 +128,14 @@
             }
             for (let byte = 0; byte < section.length; byte++) {
                 $bytes = $('.byte-' + (section.start + byte));
+                if (section.confirmed) {
+                    $bytes.addClass('confirmed');
+                }
                 $bytes.addClass('section').addClass('section-' + section.id).data('section', section);
                 if (section.checksum) {
                     $bytes.addClass('checksum');
                 }
-                if (section.confirmed) {
-                    $bytes.addClass('confirmed');
-                }
+
                 $bytes.attr('title', section.title);
                 $bytes.map(function (byte) {
                     let el = $bytes[byte],

@@ -1,0 +1,139 @@
+<style>
+    .content {
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+
+    .hexRow {
+        display: flex;
+        width: 100%;
+    }
+
+    /*.hexColumnAddr {}*/
+
+    .hexColumns {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        /*justify-content: space-evenly;*/
+        /*width: 500px;*/
+    }
+
+
+    .asciiColumns {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        /*justify-content: space-evenly;*/
+        /*width: 300px;*/
+        border-left: 1px solid #ccc;
+        padding-left: 5px;
+        margin-left: 5px;
+    }
+
+    .hexColumns .hexByte,
+    .hexColumns .fillByte {
+        padding: 0 2px;
+    }
+
+    .asciiColumns .asciiByte {
+        padding: 0 1px;
+    }
+
+    .addrColumn {
+        border-right: 1px solid #ccc;
+        padding-right: 5px;
+        margin-right: 5px;
+    }
+
+    .section {
+        background: #8fbfe9;
+    }
+
+    .section.confirmed {
+        background: #8fe9bf;
+    }
+
+    .hexColumns .hover {
+        background: #ddd;
+    }
+
+    .asciiColumns .hover {
+        background: #ddd;
+    }
+
+    .hoverSection {
+        background: #f0f1f5;
+        color: rgb(14, 13, 13);
+    }
+
+    .hoverSection.confirmed {
+        background: #65e760;
+        color: #fff;
+    }
+
+    .checksum {
+        color: #f54905;
+        font-weight: bold;
+    }
+
+    .checksum.confirmed {
+        color: #ff0000;
+        font-weight: bold;
+    }
+
+    .section-CONST_1 {
+        background: #2a860fad !important;
+    }
+
+    .section-KEYS_COUNT {
+        background: #f79647 !important;
+    }
+
+    .section-KEYS {
+        background: #697004 !important;
+    }
+
+    .section-PSK_LOW {
+        background: #f34654 !important;
+    }
+
+    .section-PN_SAAB1 {
+        background: #00ffea !important;
+    }
+
+    .section-UNKNOWN_DATA_5 {
+        background: #0b00a5b0 !important;
+    }
+
+    .section-UNKNOWN_DATA_6 {
+        background: #d103d888 !important;
+    }
+
+    .section-UNKNOWN_DATA_7 {
+        background: #c3d80388 !important;
+    }
+
+    .section-UNKNOWN_DATA_10 {
+        background: #46f8e9d2 !important;
+    }
+
+    .section-UNKNOWN_DATA_11 {
+        background: #d35bf1d2 !important;
+    }
+
+    .section-UNKNOWN_DATA_12 {
+        background: #3895e0d2 !important;
+    }
+
+    .section-UNKNOWN_DATA_13 {
+        background: #7be038d2 !important;
+    }
+
+    .section-UNKNOWN_DATA_14 {
+        background: #8d0338e5 !important;
+    }
+</style>

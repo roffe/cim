@@ -1,0 +1,485 @@
+var sections = [
+    {
+        id: 'CONST_0',
+        start: 0x0,
+        length: 1
+    },
+    {
+        id: 'CONST_1',
+        start: 0xf3,
+        length: 8
+    },
+    {
+        id: 'CHECKSUM_CONST_1',
+        start: 0xfb,
+        length: 2,
+        checksum: true,
+        type: "uint16"
+    },
+    {
+        id: 'VIN',
+        start: 0x1B,
+        length: 17,
+        confirmed: true,
+        type: "string"
+    },
+    {
+        id: 'VIN_UNKNOWN_VALUE',
+        start: 0x2C,
+        length: 1
+    },
+    {
+        id: 'VIN_UNKNOWN',
+        start: 0x2D,
+        length: 9
+    },
+    {
+        id: 'CHECKSUM_VIN',
+        start: 0x37,
+        length: 2,
+        checksum: true,
+        confirmed: true
+    },
+    {
+        id: 'PIN',
+        start: 0xAF,
+        length: 4,
+        confirmed: true
+    },
+    {
+        id: 'PIN',
+        start: 0xB9,
+        length: 4,
+        confirmed: true
+    },
+    {
+        id: 'PIN_UNKNOWN',
+        start: 0xB3,
+        length: 4,
+    },
+    {
+        id: 'PIN_UNKNOWN',
+        start: 0xBD,
+        length: 4,
+    },
+    {
+        id: 'CHECKSUM_PIN',
+        start: 0xb7,
+        length: 2,
+        checksum: true,
+        confirmed: true
+    },
+    {
+        id: 'CHECKSUM_PIN',
+        start: 0xc1,
+        length: 2,
+        checksum: true,
+        confirmed: true
+    },
+    {
+        id: 'KEYS',
+        start: 0x103,
+        length: 20,
+        confirmed: true
+    },
+    {
+        id: 'KEYS',
+        start: 0x128,
+        length: 20,
+        confirmed: true
+    },
+    {
+        id: 'KEY_ERRORS',
+        start: 0x11f,
+        length: 1,
+        confirmed: true
+    },
+    {
+        id: 'KEY_ERRORS',
+        start: 0x144,
+        length: 1,
+        confirmed: true
+    },
+    {
+        id: 'KEYS_UNKNOWN',
+        start: 0x118,
+        length: 7
+    },
+    {
+        id: 'KEYS_UNKNOWN',
+        start: 0x13D,
+        length: 7
+    },
+    {
+        id: 'KEYS_COUNT',
+        start: 0x117,
+        length: 1,
+        confirmed: true
+    },
+    {
+        id: 'KEYS_COUNT',
+        start: 0x13C,
+        length: 1,
+        confirmed: true
+    },
+    {
+        id: 'ISK_HI',
+        start: 0xFD,
+        length: 4,
+        confirmed: true
+    },
+    {
+        id: 'ISK_LO',
+        start: 0x101,
+        length: 2,
+        confirmed: true
+    },
+    {
+        id: 'ISK_HI',
+        start: 0x122,
+        length: 4,
+        confirmed: true
+    },
+    {
+        id: 'ISK_LO',
+        start: 0x126,
+        length: 2,
+        confirmed: true
+    },
+    {
+        id: 'CHECKSUM_KEYS',
+        start: 0x120,
+        length: 2,
+        checksum: true,
+        confirmed: true
+    },
+    {
+        id: 'CHECKSUM_KEYS',
+        start: 0x145,
+        length: 2,
+        checksum: true,
+        confirmed: true
+    },
+    {
+        id: 'PSK_LOW',
+        start: 0x1e5,
+        length: 4,
+        confirmed: true
+    },
+    {
+        id: 'PSK_HI',
+        start: 0x1e9,
+        length: 2,
+        confirmed: true
+    },
+    {
+        id: 'PSK_UNKNOWN',
+        start: 0x1eb,
+        length: 6
+    },
+    {
+        id: 'CHECKSUM_PSK',
+        start: 0x1f1,
+        length: 2,
+        checksum: true,
+        confirmed: true
+    },
+    {
+        id: 'REMOTE_SYNC',
+        start: 0x160,
+        length: 20,
+        confirmed: true
+    },
+    {
+        id: 'CHECKSUM_REMOTE_SYNC',
+        start: 0x174,
+        length: 2,
+        checksum: true,
+        confirmed: true
+    },
+    {
+        id: 'PROGRAMMING_DATE',
+        start: 0x1,
+        length: 3,
+        confirmed: true,
+        type: "BCD yymmdd"
+    },
+    {
+        id: 'PROGRAMMING_ID',
+        start: 0x39,
+        length: 10 * 3,
+        confirmed: true
+    },
+    {
+        id: 'SN_STICKER',
+        start: 0x1cd,
+        length: 5,
+        confirmed: true,
+        type: "5 byte BCD uint64"
+    },
+    {
+        id: 'PN_SAAB1',
+        start: 0xb,
+        length: 6
+    },
+    {
+        id: 'PN_BASE1',
+        start: 0x15,
+        length: 6
+    },
+    {
+        id: 'CONFIGURATION_VERSION',
+        start: 0x11,
+        length: 4,
+        confirmed: true,
+        type: "uint32"
+    },
+    {
+        id: 'PN_DELPHI',
+        start: 0x1d8,
+        length: 4,
+        confirmed: true
+    },
+    {
+        id: 'PN_SAAB2',
+        start: 0x1de,
+        length: 4
+    },
+    {
+        id: 'PROGRAMMING_FACTORY_DATE',
+        start: 0x1d2,
+        length: 3,
+        type: "Reversed BCD date ddmmyy"
+    },
+    {
+        id: 'SAS_OPTION',
+        start: 0x4,
+        length: 1,
+        type: "uint8"
+    },
+    {
+        id: 'SPS_COUNT',
+        start: 0x36,
+        length: 1,
+        confirmed: true,
+        type: "uint8"
+    },
+    {
+        id: 'UNKNOWN_DATA_1',
+        start: 0xc7,
+        length: 20
+    },
+    {
+        id: 'UNKNOWN_DATA_1',
+        start: 0xdd,
+        length: 20
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_1',
+        start: 0xf1,
+        length: 2,
+        checksum: true
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_1',
+        start: 0xdb,
+        length: 2,
+        checksum: true
+    },
+    {
+        id: 'UNKNOWN_DATA_2',
+        start: 0x1bf,
+        length: 5
+    },
+    {
+        id: 'UNKNOWN_DATA_2',
+        start: 0x1c6,
+        length: 5
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_2',
+        start: 0x1c4,
+        length: 2,
+        checksum: true
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_2',
+        start: 0x1cb,
+        length: 2,
+        checksum: true
+    },
+
+
+    {
+        id: 'UNKNOWN_DATA_3',
+        start: 0x057,
+        length: 42
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_3',
+        start: 0x081,
+        length: 2,
+        checksum: true
+    },
+    {
+        id: 'UNKNOWN_DATA_3',
+        start: 0x083,
+        length: 42
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_3',
+        start: 0x0ad,
+        length: 2,
+        checksum: true
+    },
+
+
+    {
+        id: 'UNKNOWN_DATA_4',
+        start: 0x0c3,
+        length: 2
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_4',
+        start: 0x0c5,
+        length: 2,
+        checksum: true
+    },
+
+    {
+        id: 'UNKNOWN_DATA_5',
+        start: 0x147,
+        length: 23
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_5',
+        start: 0x15e,
+        length: 2,
+        checksum: true
+    },
+
+    {
+        id: 'UNKNOWN_DATA_6',
+        start: 0x176,
+        length: 20
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_6',
+        start: 0x18a,
+        length: 2,
+        checksum: true
+    },
+    {
+        id: 'UNKNOWN_DATA_6',
+        start: 0x18c,
+        length: 20
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_6',
+        start: 0x1a0,
+        length: 2,
+        checksum: true
+    },
+    {
+        id: 'UNKNOWN_DATA_7',
+        start: 0x1a9,
+        length: 5
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_7',
+        start: 0x1ae,
+        length: 2,
+        checksum: true
+    },
+    {
+        id: 'UNKNOWN_DATA_7',
+        start: 0x1a2,
+        length: 5
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_7',
+        start: 0x1a7,
+        length: 2,
+        checksum: true
+    },
+
+
+    {
+        id: 'UNKNOWN_DATA_8',
+        start: 0x1b0,
+        length: 6
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_8',
+        start: 0x1b6,
+        length: 2,
+        checksum: true
+    },
+
+    {
+        id: 'UNKNOWN_DATA_9',
+        start: 0x1b8,
+        length: 5
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_9',
+        start: 0x1bd,
+        length: 2,
+        checksum: true
+    },
+
+    {
+        id: 'UNKNOWN_DATA_10',
+        start: 0x1f3,
+        length: 4
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_10',
+        start: 0x1f7,
+        length: 2,
+        checksum: true
+    },
+
+
+    {
+        id: 'UNKNOWN_DATA_10',
+        start: 0x1f9,
+        length: 4
+    },
+    {
+        id: 'CHECKSUM_UNKNOWN_DATA_10',
+        start: 0x1fd,
+        length: 2,
+        checksum: true
+    },
+    {
+        id: 'UNKNOWN_DATA_11',
+        start: 0x5,
+        length: 6,
+        type: "binary"
+    },
+    {
+        id: 'UNKNOWN_DATA_12',
+        start: 0x1d5,
+        length: 3,
+        type: "binary"
+    },
+    {
+        id: 'UNKNOWN_DATA_13',
+        start: 0x1dc,
+        length: 2,
+        type: "binary"
+    },
+    {
+        id: 'UNKNOWN_DATA_14',
+        start: 0x1e2,
+        length: 3,
+        type: "binary"
+    },
+    {
+        id: 'END_OF_FILE',
+        start: 0x1ff,
+        length: 1,
+        confirmed: true
+    },
+];

@@ -15,7 +15,7 @@ import (
 
 var tableTheme = table.StyleColoredDark
 
-const isoDate = "2006-01-02"
+const IsoDate = "2006-01-02"
 
 // Load a file from disk
 func Load(filename string) (*Bin, error) {

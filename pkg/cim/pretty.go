@@ -56,8 +56,8 @@ func (fw *Bin) Pretty() {
 
 	ph := s("Programming history")
 	ph.AppendRow(table.Row{"Serial sticker", fw.SnSticker})
-	ph.AppendRow(table.Row{"Factory programming date", fw.ProgrammingFactoryDate.Format(isoDate)})
-	ph.AppendRow(table.Row{"Last programming date", fw.ProgrammingDate.Format(isoDate)})
+	ph.AppendRow(table.Row{"Factory programming date", fw.ProgrammingFactoryDate.Format(IsoDate)})
+	ph.AppendRow(table.Row{"Last programming date", fw.ProgrammingDate.Format(IsoDate)})
 	if fw.Vin.SpsCount == 0 {
 		ph.AppendRow(table.Row{"Factory programming only"})
 	} else {
