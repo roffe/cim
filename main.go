@@ -61,6 +61,9 @@ var templateHelpers = template.FuncMap{
 		}
 		return template.HTML("")
 	},
+	"keyOffset": func(factor int) template.HTML {
+		return template.HTML(fmt.Sprintf("%d", 259+(4*factor)))
+	},
 }
 
 func serve() error {

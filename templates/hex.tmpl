@@ -20,21 +20,23 @@
             <div class="col">
             <h1>CIM Dump Editor</h1>
                 <h6>{{.filename}}&nbsp;<a href="/"><button>Back</button></a></h6>
-                MD5: <b>{{.fw.MD5}}</b> CRC32: <b>{{.fw.CRC32}}</b>
+                <b>MD5:</b> {{.fw.MD5}} <b>CRC32:</b> {{.fw.CRC32}}
             </div>
         </div>
         <hr>
         <div class="row">
             <div class="col">
                         <form>
-                        <b>Vin:</b> <input class="field byte-24 section-VIN" type="text" value="{{.fw.Vin.Data}}"><br>
+                        <b>Vin:</b> <input class="field byte-24 section-VIN" type="text" value="{{.fw.Vin.Data}}"><br><br>
                         <b>Model Year:</b> {{.fw.ModelYear}}<br><br>
-                        <b>Pin:</b> <input class="field byte-175 section-PIN" type="text" value="{{printHex .fw.Pin.Pin1}}"><br>
-                        <b>Steering Angle Sensor:</b> <input class="field byte-4 section-SAS_OPTION" type="checkbox" id="sas_opt" name="sas_opt" {{boolChecked .fw.SasOpt}}><br><br>
-                        <b>Programmed keys:</b> <span class="field byte-279 section-KEYS_COUNT">{{.fw.Keys.KeysKeysCount1}}</b></span><br>
+                        <b>Pin:</b> <input class="field byte-175 section-PIN" type="text" value="{{printHex .fw.Pin.Pin1}}"><br><br>
+                        <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4 section-SAS_OPTION" type="checkbox" id="sas_opt" name="sas_opt" {{boolChecked .fw.SasOpt}}><br>
+                        <hr>
+                        <b>Programmed keys:</b> <input class="field byte-279 section-KEYS_COUNT" style="width: 35px;" type="number" value="{{.fw.Keys.KeysKeysCount1}}"><br><br>
                         {{range $key, $val := .fw.Keys.Keys1}}
-                        <b>{{$key}}</b> <input class="field byte-259 section-KEYS" type="text" value="{{printHex $val}}"><br>
-                        {{end}}<br>
+                        <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}} section-KEYS{{$key}}" type="text" value="{{printHex $val}}"><br>
+                        {{end}}
+                        <hr>
                         <b>Programming history:</b><br>
                         <ul>
                         <li><b>Last programming date:</b> <span class="field byte-2 section-PROGRAMMING_DATE">{{isoDate .fw.ProgrammingDate}}</span></li>
@@ -53,23 +55,25 @@
             <div class="col">
                         <b>Remotes:</b><br>
                         <b>ISK High:</b> <input class="field byte-253 section-ISK_HI" type="text" value="{{printHex .fw.Keys.IskHI1}}"><br>
-                        <b>ISK Low:</b>&nbsp; <input class="field byte-257 section-ISK_LO" type="text" value="{{printHex .fw.Keys.IskLO1}}"><br>
-                        <b>PCF:</b> <i>6732F2C5</i><br><br>
+                        <b>ISK Low:</b>&nbsp; <input class="field byte-257 section-ISK_LO" type="text" value="{{printHex .fw.Keys.IskLO1}}"><br><br>
+                        <b>PCF:</b> <i>6732F2C5</i><br>
+                        <hr>
                         <b>Sync:</b><br>
                         {{range $val := .fw.Sync.Data}}
                         <input class="field byte-352 section-REMOTE_SYNC" type="text" value="{{printHex $val}}">
                         {{end}}<br>
                         <br>
-                        <b>Serial sticker:</b> <span class="field byte-461 section-SN_STICKER">{{.fw.SnSticker}}</span><p>
-                        <b>Factory programming date:</b> <span class="field byte-466 section-PROGRAMMING_FACTORY_DATE">{{isoDate .fw.ProgrammingFactoryDate}}</span></p>
-                        <br>
+                        <hr>
+                        <b>Serial sticker:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-461 section-SN_STICKER" type="text" value="{{.fw.SnSticker}}"><br>
+                        <b>Factory programming date:</b> <input class="field byte-466 section-PROGRAMMING_FACTORY_DATE" type="text" value="{{isoDate .fw.ProgrammingFactoryDate}}"><br>
+                        <hr>
                         <b>Part numbers:</b><br>
                         <ul>
-                        <li>End model (HW+SW):&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-11 section-PN_SAAB1" value="{{.fw.PartNo1}}{{.fw.PartNo1Suffix}}"></li>
-	                    <li>Base model (HW+boot):&nbsp; <input class="field byte-21 section-PN_BASE1" value="{{.fw.PnBase1}}{{.fw.PnBase1Suffix}}"></li>
-	                    <li>Delphi part number:&nbsp;&nbsp;&nbsp; <input class="field byte-472 section-PN_DELPHI" value="{{.fw.DelphiPN}}"></li>
-	                    <li>SAAB part number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-478 section-PN_SAAB2" value="{{.fw.PartNo}}"></li>
-	                    <li>Configuration Version: <input class="field byte-17 section-CONFIGURATION_VERSION" value="{{.fw.ConfigurationVersion}}"></li>
+                        <li>End model (HW+SW):&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-11 section-PN_SAAB1" type="text" value="{{.fw.PartNo1}}{{.fw.PartNo1Suffix}}"></li>
+	                    <li>Base model (HW+boot):&nbsp; <input class="field byte-21 section-PN_BASE1" type="text" value="{{.fw.PnBase1}}{{.fw.PnBase1Suffix}}"></li>
+	                    <li>Delphi part number:&nbsp;&nbsp;&nbsp; <input class="field byte-472 section-PN_DELPHI" type="text" value="{{.fw.DelphiPN}}"></li>
+	                    <li>SAAB part number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-478 section-PN_SAAB2" type="text" value="{{.fw.PartNo}}"></li>
+	                    <li>Configuration Version: <input class="field byte-17 section-CONFIGURATION_VERSION" type="text" value="{{.fw.ConfigurationVersion}}"></li>
                         </ul>
                     </form>               
             </div>
