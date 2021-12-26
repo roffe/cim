@@ -147,22 +147,19 @@ func web() {
 		width := 40
 		for _, bb := range bs {
 			if pos == 0 {
-				hexRow.WriteString(`
-				<div class="hexRow">
-                <div class="addrColumn">` + fmt.Sprintf("%03X", offset) + ` </div>
-                <div class="hexColumns">
-				`)
+				hexRow.WriteString(`<div class="hexRow">` + "\n" +
+					"\t" + `<div class="addrColumn">` + fmt.Sprintf("%03X", offset) + "</div>\n" +
+					"\t" + `<div class="hexColumns">` + "\n")
 			}
-			//hexRow.WriteString(fmt.Sprintf("%02X&nbsp;", bb))
 
-			hexRow.WriteString(fmt.Sprintf(`<div class="hexByte byte-%d" data-i="%d">%02X</div>`+"\n", offset, offset, bb))
+			hexRow.WriteString(fmt.Sprintf("\t\t"+`<div class="hexByte byte-%d" data-i="%d">%02X</div>`+"\n", offset, offset, bb))
 			asciiColumns.WriteString(fmt.Sprintf(`<div class="asciiByte byte-%d" data-i="%d">%s</div>`+"\n", offset, offset, ps(bb)))
 			if pos == width {
-				hexRow.WriteString("</div>")
-				hexRow.WriteString(`<div class="asciiColumns">`)
+				hexRow.WriteString("</div>\n")
+				hexRow.WriteString(`<div class="asciiColumns">` + "\n")
 				hexRow.WriteString(asciiColumns.String())
-				hexRow.WriteString(`</div>`)
-				hexRow.WriteString("</div>")
+				hexRow.WriteString("</div>\n")
+				hexRow.WriteString("</div>\n")
 				asciiColumns.Reset()
 				pos = 0
 				offset++
@@ -172,16 +169,18 @@ func web() {
 			offset++
 		}
 		if pos <= width {
-			hexRow.WriteString(`<div class="fillByte">&nbsp;&nbsp;</div>`)
+			for i := pos; i <= width; i++ {
+				hexRow.WriteString(`<div class="fillByte">&nbsp;&nbsp;</div>` + "\n")
+			}
 			hexRow.WriteString("</div>")
-			hexRow.WriteString(`<div class="asciiColumns">`)
+			hexRow.WriteString(`<div class="asciiColumns">` + "\n")
 			hexRow.WriteString(asciiColumns.String())
-			hexRow.WriteString(`</div>`)
-			hexRow.WriteString("</div>")
+			hexRow.WriteString("</div>\n")
+			hexRow.WriteString("</div>\n")
 			asciiColumns.Reset()
 		}
 
-		hexRow.WriteString(`</div>`)
+		hexRow.WriteString("</div>")
 
 		b64 := base64.StdEncoding.EncodeToString(bs)
 
@@ -231,5 +230,10 @@ func ps(b byte) string {
 	if a >= 0x7F {
 		return "˟"
 	}
+
+	if a == 0x3c || a == 0x3e {
+		return "˟"
+	}
+
 	return fmt.Sprintf("%s", []byte{b})
 }
