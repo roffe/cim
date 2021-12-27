@@ -13,16 +13,16 @@ func (fw *Bin) Dump() {
 	fmt.Println("")
 
 	fmt.Println("VIN:", fw.Vin.Data)
-	fmt.Printf("PIN: %q / %q\n", fw.Pin.Pin1, fw.Pin.Pin2)
+	fmt.Printf("PIN: %q / %q\n", fw.Pin.Data1, fw.Pin.Data2)
 	fmt.Println("")
 
 	fmt.Printf("Model Year: %02s\n", fw.Vin.Data[9:10])
 	fmt.Printf("Steering Angle Sensor: %t\n", fw.SasOpt())
 	fmt.Println("")
 
-	fmt.Println("Programmed keys:", fw.Keys.KeysKeysCount1)
-	for i, k := range fw.Keys.Keys1 {
-		fmt.Printf("Key %d: %X / %X\n", i+1, k, fw.Keys.Keys2[i])
+	fmt.Println("Programmed keys:", fw.Keys.Count1)
+	for i, k := range fw.Keys.Data1 {
+		fmt.Printf("Key %d: %X / %X\n", i+1, k, fw.Keys.Data2[i])
 	}
 	fmt.Printf("ISK High: %X / %X\n", fw.Keys.IskHI1, fw.Keys.IskHI2)
 	fmt.Printf("ISK Low: %X / %X\n", fw.Keys.IskLO1, fw.Keys.IskLO2)

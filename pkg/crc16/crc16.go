@@ -3,10 +3,6 @@
 // It provides parameters for the majority of well-known CRC-16 algorithms.
 package crc16
 
-import (
-	"encoding/binary"
-)
-
 // Params represents parameters of CRC-16 algorithms.
 // More information about algorithms parametrization and parameter descriptions
 // can be found here - http://www.zlib.net/crc_v3.txt
@@ -157,12 +153,10 @@ func ReverseUint16(val uint16) uint16 {
 
 var crctable = MakeTable(CRC16_MCRF4XX)
 
-func Calc16(data []byte) []byte {
-	out := make([]byte, 2)
-	crc := Checksum(data, crctable)
-	binary.LittleEndian.PutUint16(out, crc)
-	return out
-}
+//func Calc16(data []byte) (out []byte) {
+//	binary.LittleEndian.PutUint16(out, Checksum(data, crctable))
+//	return
+//}
 
 func Calc(data []byte) uint16 {
 	return Checksum(data, crctable)

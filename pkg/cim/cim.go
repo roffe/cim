@@ -64,83 +64,71 @@ func LoadBytes(filename string, b []byte) (*Bin, error) {
 }
 
 type Bin struct {
-	filename             string    `bin:"-"`
-	md5                  string    `bin:"-"`
-	crc32                string    `bin:"-"`
-	MagicByte            byte      `bin:"len:1"`         // 0x20
-	ProgrammingDate      time.Time `bin:"BCDDate,len:3"` // BCD Binary-Coded Decimal yy-mm-dd
-	SasOption            uint8     `bin:"len:1"`         // Steering Angle Sensor 0x03 = true
-	UnknownBytes1        []byte    `bin:"len:6"`
-	PartNo1              uint32    `bin:"len:4"` // End model (HW+SW)
-	PartNo1Suffix        string    `bin:"len:2"`
-	ConfigurationVersion uint32    `bin:"len:4"`
-	PnBase1              uint32    `bin:"len:4"` // Base model (HW+boot)
-	PnBase1Suffix        string    `bin:"len:2"`
-	Vin                  struct {
-		Data     string `bin:"len:17"` // Vin as ASCII
-		Value    uint8  `bit:"len:1"`  // unknown value, seems to be a counter?
-		Unknown  []byte `bin:"len:9"`
-		SpsCount uint8  `bin:"len:1"`
-		Checksum uint16 `bin:"le,len:2"` // CRC16 MCRF4XX
-	} // 30 bytes
-	ProgrammingID []string     `bin:"len:3,[len:10]"` // 3 last sps progrmming ids's groups of 10 characters each. 30 bytes
-	UnknownData3  UnknownData3 `bin:"len:88"`
-	Pin           struct {
-		Pin1         []byte `bin:"len:4"` // LE
-		Pin1Unknown  []byte `bin:"len:4"`
-		Pin1Checksum uint16 `bin:"le,len:2"`
-		Pin2         []byte `bin:"len:4"` // LE
-		Pin2Unknown  []byte `bin:"len:4"`
-		Pin2Checksum uint16 `bin:"le,len:2"`
-	} // 20 bytes
-	UnknownData4 UnknownData4 `bin:"len:4"`
-	UnknownData1 UnknownData1 `bin:"len:44"`
-	Const1       struct {
-		Data     []byte `bin:"len:8"`
-		Checksum uint16 `bin:"le,len:2"` // CRC16 MCRF4XX
-	} // 10 bytes
-	Keys struct {
-		IskHI1         []byte   `bin:"len:4"`
-		IskLO1         []byte   `bin:"len:2"`
-		Keys1          [][]byte `bin:"len:5,[len:4]"`
-		KeysKeysCount1 uint8    `bin:"len:1"`
-		KeysConstant1  []byte   `bin:"len:7"`
-		KeyErrors1     uint8    `bin:"len:1"`
-		Checksum1      uint16   `bin:"le,len:2"`
-		IskHI2         []byte   `bin:"len:4"`
-		IskLO2         []byte   `bin:"len:2"`
-		Keys2          [][]byte `bin:"len:5,[len:4]"`
-		KeysKeysCount2 uint8    `bin:"len:1"`
-		KeysConstant2  []byte   `bin:"len:7"`
-		KeyErrors2     uint8    `bin:"len:1"`
-		Checksum2      uint16   `bin:"le,len:2"` // CRC16 MCRF4XX
-	} // 74 bytes
-	UnknownData5 UnknownData5 `bin:"len:25"`
-	Sync         struct {
-		Data     [][]byte `bin:"len:5,[len:4]"`
-		Checksum uint16   `bin:"le,len:2"`
-	} // 22 bytes
-	UnknownData6           UnknownData6 `bin:"len:44"`
-	UnknownData7           UnknownData7 `bin:"len:14"`
-	UnknownData8           UnknownData8 `bin:"len:8"`
-	UnknownData9           UnknownData9 `bin:"len:7"`
-	UnknownData2           UnknownData2 `bin:"len:14"`
-	SnSticker              uint64       `bin:"ReadSN,len:5"`   // BCD
-	ProgrammingFactoryDate time.Time    `bin:"BCDDateR,len:3"` // Reversed BCD date dd-mm-yy
-	UnknownBytes2          []byte       `bin:"len:3"`
-	DelphiPN               uint32       `bin:"le,len:4"` // Little endian, Delphi part number
-	UnknownBytes3          []byte       `bin:"len:2"`
-	PartNo                 uint32       `bin:"le,len:4"` // Little endian, SAAB part number (factory?)
-	UnknownData14          []byte       `bin:"len:3"`
-	PSK                    struct {
-		Low      []byte `bin:"len:4"`
-		High     []byte `bin:"len:2"`
-		Constant []byte `bin:"len:4"`
-		Unknown  []byte `bin:"len:2"`
-		Checksum uint16 `bin:"le,len:2"` // CRC16 MCRF4XX
-	} // 14 bytes
-	UnknownData10 UnknownData10 `bin:"len:12"`
-	EOF           byte          `bin:"len:1"` //0x00
+	filename               string        `bin:"-"`
+	md5                    string        `bin:"-"`
+	crc32                  string        `bin:"-"`
+	MagicByte              byte          `bin:"len:1"`         // 0x20
+	ProgrammingDate        time.Time     `bin:"BCDDate,len:3"` // BCD Binary-Coded Decimal yy-mm-dd
+	SasOption              uint8         `bin:"len:1"`         // Steering Angle Sensor 0x03 = true
+	UnknownBytes1          []byte        `bin:"len:6"`
+	PartNo1                uint32        `bin:"len:4"` // End model (HW+SW)
+	PartNo1Suffix          string        `bin:"len:2"`
+	ConfigurationVersion   uint32        `bin:"len:4"`
+	PnBase1                uint32        `bin:"len:4"` // Base model (HW+boot)
+	PnBase1Suffix          string        `bin:"len:2"`
+	Vin                    Vin           `bin:"len:30"`         //30 bytes
+	ProgrammingID          []string      `bin:"len:3,[len:10]"` // 3 last sps progrmming ids's groups of 10 characters each. 30 bytes
+	UnknownData3           UnknownData3  `bin:"len:88"`
+	Pin                    Pin           `bin:"len:20"` // 20 bytes
+	UnknownData4           UnknownData4  `bin:"len:4"`
+	UnknownData1           UnknownData1  `bin:"len:44"`
+	Const1                 Const1        `bin:"len:10"` // 10 bytes
+	Keys                   Keys          `bin:"len:74"` // 74 bytes
+	UnknownData5           UnknownData5  `bin:"len:25"`
+	Sync                   Sync          `bin:"len:22"` // 22 bytes
+	UnknownData6           UnknownData6  `bin:"len:44"`
+	UnknownData7           UnknownData7  `bin:"len:14"`
+	UnknownData8           UnknownData8  `bin:"len:8"`
+	UnknownData9           UnknownData9  `bin:"len:7"`
+	UnknownData2           UnknownData2  `bin:"len:14"`
+	SnSticker              uint64        `bin:"ReadSN,len:5"`   // BCD
+	ProgrammingFactoryDate time.Time     `bin:"BCDDateR,len:3"` // Reversed BCD date dd-mm-yy
+	UnknownBytes2          []byte        `bin:"len:3"`
+	DelphiPN               uint32        `bin:"le,len:4"` // Little endian, Delphi part number
+	UnknownBytes3          []byte        `bin:"len:2"`
+	PartNo                 uint32        `bin:"le,len:4"` // Little endian, SAAB part number (factory?)
+	UnknownData14          []byte        `bin:"len:3"`
+	PSK                    PSK           `bin:"len:14"` // 14 byte
+	UnknownData10          UnknownData10 `bin:"len:12"`
+	EOF                    byte          `bin:"len:1"` //0x00
+}
+
+// Validate all checksums and known tests to ensure a healthy bin
+func (bin *Bin) Validate() error {
+	tests := []func() error{
+		bin.Vin.validate,
+		bin.Pin.validate,
+		bin.Keys.validate,
+		bin.Const1.validate,
+		bin.UnknownData1.validate,
+		bin.UnknownData2.validate,
+		bin.UnknownData3.validate,
+		bin.UnknownData4.validate,
+		bin.UnknownData5.validate,
+		bin.UnknownData6.validate,
+		bin.UnknownData7.validate,
+		bin.UnknownData8.validate,
+		bin.UnknownData9.validate,
+		bin.UnknownData10.validate,
+		bin.PSK.validate,
+	}
+
+	for _, v := range tests {
+		if err := v(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (bin *Bin) SasOpt() bool {
@@ -197,20 +185,4 @@ func (bin *Bin) CRC32() string {
 // Return model year from VIN
 func (bin *Bin) ModelYear() string {
 	return fmt.Sprintf("%02s", bin.Vin.Data[9:10])
-}
-
-// Validate all checksums and known tests to ensure a healthy bin
-func (bin *Bin) Validate() error {
-	tests := []func() error{
-		bin.validateVin,
-		bin.validatePin,
-		bin.validateKeys,
-	}
-
-	for _, v := range tests {
-		if err := v(); err != nil {
-			return err
-		}
-	}
-	return nil
 }

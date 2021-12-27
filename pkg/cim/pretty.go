@@ -23,16 +23,16 @@ func (fw *Bin) Pretty() {
 
 	pin := s("Pin")
 	pin.AppendHeader(table.Row{"#", "Bank 1", "Bank 2"})
-	pin.AppendRow(table.Row{0, fmt.Sprintf("%X", fw.Pin.Pin1), fmt.Sprintf("%X", fw.Pin.Pin2)})
+	pin.AppendRow(table.Row{0, fmt.Sprintf("%X", fw.Pin.Data1), fmt.Sprintf("%X", fw.Pin.Data2)})
 	pin.Render()
 
-	keys := s(fmt.Sprintf("Programmed keys: %d", fw.Keys.KeysKeysCount1))
+	keys := s(fmt.Sprintf("Programmed keys: %d", fw.Keys.Count1))
 	keys.AppendHeader(table.Row{
 		"#", "Bank 1", "Bank 2",
 	})
-	for i, k := range fw.Keys.Keys1 {
+	for i, k := range fw.Keys.Data1 {
 		keys.AppendRow(table.Row{
-			i + 1, fmt.Sprintf("%X", k), fmt.Sprintf("%X", fw.Keys.Keys2[i]),
+			i + 1, fmt.Sprintf("%X", k), fmt.Sprintf("%X", fw.Keys.Data2[i]),
 		})
 	}
 	keys.Render()

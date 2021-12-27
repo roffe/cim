@@ -9,7 +9,7 @@
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    {{template "style.tmpl"}}
+    {{template "style.tmpl" .}}
 
 </head>
 
@@ -27,26 +27,26 @@
         <div class="row">
             <div class="col">
                         <form>
-                        <b>Vin:</b> <input class="field byte-24 section-VIN" type="text" value="{{.fw.Vin.Data}}"><br><br>
+                        <b>Vin:</b> <input class="field byte-28" type="text" value="{{.fw.Vin.Data}}"><br><br>
                         <b>Model Year:</b> {{.fw.ModelYear}}<br><br>
-                        <b>Pin:</b> <input class="field byte-175 section-PIN" type="text" value="{{printHex .fw.Pin.Pin1}}"><br><br>
-                        <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4 section-SAS_OPTION" type="checkbox" id="sas_opt" name="sas_opt" {{boolChecked .fw.SasOpt}}><br>
+                        <b>Pin:</b> <input class="field byte-175" type="text" value="{{printHex .fw.Pin.Data1}}"><br><br>
+                        <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4" type="checkbox" id="sas_opt" name="sas_opt" {{boolChecked .fw.SasOpt}}><br>
                         <hr>
-                        <b>Programmed keys:</b> <input class="field byte-279 section-KEYS_COUNT" style="width: 35px;" type="number" value="{{.fw.Keys.KeysKeysCount1}}"><br><br>
-                        {{range $key, $val := .fw.Keys.Keys1}}
-                        <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}} section-KEYS{{$key}}" type="text" value="{{printHex $val}}"><br>
+                        <b>Programmed keys:</b> <input class="field byte-279" style="width: 35px;" type="number" value="{{.fw.Keys.Count1}}"><br><br>
+                        {{range $key, $val := .fw.Keys.Data1}}
+                        <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text" value="{{printHex $val}}"><br>
                         {{end}}
                         <hr>
                         <b>Programming history:</b><br>
                         <ul>
-                        <li><b>Last programming date:</b> <span class="field byte-2 section-PROGRAMMING_DATE">{{isoDate .fw.ProgrammingDate}}</span></li>
+                        <li><b>Last programming date:</b> <span class="field byte-2">{{isoDate .fw.ProgrammingDate}}</span></li>
                         {{if eq .fw.Vin.SpsCount 0}}
                             <li><b>Factory programming only</b></li>
                         {{else}}
-                            <li><b>SPS Counter:</b> <span class="field byte-54 section-SPS_COUNT">{{.fw.Vin.SpsCount}}</span></li>
+                            <li><b>SPS Counter:</b> <span class="field byte-54">{{.fw.Vin.SpsCount}}</span></li>
                             <ol>
                             {{range $val := .fw.ProgrammingID}}
-                                <li><span class="field byte-57 section-PROGRAMMING_ID">{{$val}}</span></li>
+                                <li><span class="field byte-57">{{$val}}</span></li>
                             {{end}}
                             </ol>
                         {{end}}
@@ -119,7 +119,7 @@
             }
         });
 
-        {{template "sections.tmpl"}}
+        {{.sections}}
 
         for (let i = 0; i < sections.length; i++) {
             let section = sections[i];
