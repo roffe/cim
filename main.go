@@ -3,8 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/base64"
-	"encoding/binary"
-	"errors"
 	"fmt"
 	"html/template"
 	"io"
@@ -12,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"time"
 
@@ -36,123 +33,16 @@ func main() {
 		if err := fw.Validate(); err != nil {
 			log.Fatal(err)
 		}
-		//fw.Pretty()
-		fmt.Println(filename)
-		jesus(fw.UnknownData14)
-		fmt.Println("----")
-		//fw.Dump()
+		fw.Pretty()
 		return
 	}
 
+	// Run web ui
 	fmt.Println("open http://localhost:8080")
 	if err := serve(); err != nil {
 		log.Fatal(err)
 	}
 
-}
-
-func jesus(v interface{}) {
-	fmt.Println(v)
-	fmt.Printf("%X\n", v)
-	fmt.Printf("%q\n", v)
-	reverseSlice(v)
-	fmt.Println(v)
-	fmt.Printf("%X\n", v)
-	fmt.Printf("%q\n", v)
-	reverseSlice(v)
-
-	switch t := v.(type) {
-	case []byte:
-		var u16le uint16
-		if err := binary.Read(bytes.NewReader(t), binary.LittleEndian, &u16le); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("u16le", u16le)
-		var u16be uint16
-		if err := binary.Read(bytes.NewReader(t), binary.BigEndian, &u16be); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("u16be", u16be)
-
-		if len(t) == 3 {
-			t = append(t, 0x00)
-		}
-
-		var u32le uint32
-		if err := binary.Read(bytes.NewReader(t), binary.LittleEndian, &u32le); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("u32le", u32le)
-		var u32be uint32
-		if err := binary.Read(bytes.NewReader(t), binary.BigEndian, &u32be); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("u32be", u32be)
-
-		if len(t) == 5 {
-			b := append([]byte{0x00, 0x00, 0x00, 0x00}, t...)
-			var u64le uint64
-			if err := binary.Read(bytes.NewReader(b), binary.LittleEndian, &u64le); err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println("5u64le", u64le)
-			var u64be uint64
-			if err := binary.Read(bytes.NewReader(b), binary.BigEndian, &u64be); err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println("5u64be", u64be)
-
-			b2 := append(t, []byte{0x00, 0x00, 0x00, 0x00}...)
-			var u64le2 uint64
-			if err := binary.Read(bytes.NewReader(b2), binary.LittleEndian, &u64le2); err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println("5u64leb", u64le)
-			var u64be2 uint64
-			if err := binary.Read(bytes.NewReader(b2), binary.BigEndian, &u64be2); err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println("5u64beb", u64be)
-
-		} else {
-			var u64le uint64
-			if err := binary.Read(bytes.NewReader(t), binary.LittleEndian, &u64le); err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println("u64le", u64le)
-			var u64be uint64
-			if err := binary.Read(bytes.NewReader(t), binary.BigEndian, &u64be); err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println("u64be", u64be)
-		}
-		/*
-			for i := byte(0x00); i < 0xff; i++ {
-				var os []byte
-				for _, bbb := range t {
-					os = append(os, bbb^i)
-				}
-				fmt.Printf("%d %X\n", i, os)
-				//fmt.Printf("%s\n", os)
-				//fmt.Printf("%d %d\n", i, os)
-
-			}
-		*/
-	}
-}
-
-func reverseSlice(data interface{}) {
-	value := reflect.ValueOf(data)
-	if value.Kind() != reflect.Slice {
-		panic(errors.New("data must be a slice type"))
-	}
-	valueLen := value.Len()
-	for i := 0; i <= int((valueLen-1)/2); i++ {
-		reverseIndex := valueLen - 1 - i
-		tmp := value.Index(reverseIndex).Interface()
-		value.Index(reverseIndex).Set(value.Index(i))
-		value.Index(i).Set(reflect.ValueOf(tmp))
-	}
 }
 
 var templateHelpers = template.FuncMap{
@@ -239,19 +129,16 @@ func uploadHandler(c *gin.Context) {
 
 	for _, bb := range fwBytes {
 		if pos == 0 {
-			hexRows.WriteString(`<div class="hexRow">` + "\n" +
-				"\t" + `<div class="addrColumn"><b>` + fmt.Sprintf("%03X", offset) + "</b></div>\n" +
-				"\t" + `<div class="hexColumns">` + "\n")
+			hexRows.WriteString(`<div class="hexRow"><div class="addrColumn"><b>` +
+				fmt.Sprintf("%03X", offset) + "</b></div>" + `<div class="hexColumns">`)
 		}
 
 		hexRows.WriteString(fmt.Sprintf("\t\t"+`<div class="hexByte byte-%d" data-i="%d">%02X</div>`+"\n", offset, offset, bb))
 		asciiColumns.WriteString(fmt.Sprintf(`<div class="asciiByte byte-%d" data-i="%d">%s</div>`+"\n", offset, offset, psafe(bb)))
 		if pos == width {
-			hexRows.WriteString("</div>\n")
-			hexRows.WriteString(`<div class="asciiColumns">` + "\n")
+			hexRows.WriteString(`</div><div class="asciiColumns">` + "\n")
 			hexRows.WriteString(asciiColumns.String())
-			hexRows.WriteString("</div>\n")
-			hexRows.WriteString("</div>\n")
+			hexRows.WriteString("</div></div>")
 			asciiColumns.Reset()
 			pos = 0
 			offset++
@@ -263,13 +150,12 @@ func uploadHandler(c *gin.Context) {
 	// Handle the tail that didn't fill a full width
 	if pos <= width {
 		for i := pos; i <= width; i++ {
-			hexRows.WriteString(`<div class="fillByte">&nbsp;&nbsp;</div>` + "\n")
+			hexRows.WriteString(`<div class="fillByte">&nbsp;&nbsp;</div>`)
 		}
 		hexRows.WriteString("</div>")
 		hexRows.WriteString(`<div class="asciiColumns">` + "\n")
 		hexRows.WriteString(asciiColumns.String())
-		hexRows.WriteString("</div>\n")
-		hexRows.WriteString("</div>\n")
+		hexRows.WriteString("</div></div>\n")
 		asciiColumns.Reset()
 	}
 
