@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/base64"
 	"fmt"
 	"html/template"
@@ -12,6 +13,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/roffe/cim/pkg/cim"
 )
+
+// embed favicon.ico
+//go:embed favicon.ico
+var favicon []byte
+
+func faviconHandler(c *gin.Context) {
+	if _, err := c.Writer.Write(favicon); err != nil {
+		c.String(http.StatusInternalServerError, "failed to load favicon.ico")
+		return
+	}
+	c.Status(200)
+}
 
 func updateHandler(c *gin.Context) {
 	if err := c.Request.ParseForm(); err != nil {

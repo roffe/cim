@@ -56,8 +56,8 @@ func (fw *Bin) Dump() {
 	fmt.Println()
 
 	fmt.Println("Part numbers:")
-	fmt.Printf("- End model (HW+SW): %d%s\n", fw.PartNo1, fw.PartNo1Suffix)
-	fmt.Printf("- Base model (HW+boot): %d%s\n", fw.PnBase1, fw.PnBase1Suffix)
+	fmt.Printf("- End model (HW+SW): %d%s\n", fw.PartNo1, fw.PartNo1Rev)
+	fmt.Printf("- Base model (HW+boot): %d%s\n", fw.PnBase1, fw.PnBase1Rev)
 	fmt.Printf("- Delphi part number: %d\n", fw.DelphiPN)
 	fmt.Printf("- SAAB part number: %d\n", fw.PartNo)
 	fmt.Printf("- Configuration Version: %d\n", fw.ConfigurationVersion)

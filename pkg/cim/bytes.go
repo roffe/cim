@@ -40,12 +40,12 @@ func (bin *Bin) Bytes() ([]byte, error) {
 		{o, binary.BigEndian, bin.UnknownBytes1},
 
 		{o, binary.BigEndian, bin.PartNo1},
-		{o, binary.BigEndian, []byte(bin.PartNo1Suffix)},
+		{o, binary.BigEndian, []byte(bin.PartNo1Rev)},
 
 		{o, binary.BigEndian, bin.ConfigurationVersion},
 
 		{o, binary.BigEndian, bin.PnBase1},
-		{o, binary.BigEndian, []byte(bin.PnBase1Suffix)},
+		{o, binary.BigEndian, []byte(bin.PnBase1Rev)},
 
 		{o, binary.BigEndian, []byte(bin.Vin.Data)},
 		{o, binary.BigEndian, bin.Vin.Value},

@@ -9,11 +9,11 @@ import (
 )
 
 type Vin struct {
-	Data     string `bin:"len:17"` // Vin as ASCII
-	Value    uint8  `bin:"len:1"`  // unknown value, seems to be a counter?
-	Unknown  []byte `bin:"len:9"`
-	SpsCount uint8  `bin:"len:1"`
-	Checksum uint16 `bin:"le,len:2"` // CRC16 MCRF4XX
+	Data     string `bin:"len:17" json:"data"` // Vin as ASCII
+	Value    uint8  `bin:"len:1" json:"value"` // unknown value, seems to be a counter?
+	Unknown  []byte `bin:"len:9" json:"unknown"`
+	SpsCount uint8  `bin:"len:1" json:"spscount"`
+	Checksum uint16 `bin:"le,len:2" json:"checksum"` // CRC16 MCRF4XX
 } // 30 bytes
 
 func (v *Vin) validate() error {

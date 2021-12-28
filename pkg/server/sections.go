@@ -29,7 +29,7 @@ func generateStyles(sections []Section) template.CSS {
 	var css strings.Builder
 	for _, s := range sections {
 		b, err := hex.DecodeString(
-			fmt.Sprintf("%x", md5.Sum([]byte(s.ID)[:3])),
+			fmt.Sprintf("%x", md5.Sum([]byte(s.ID))),
 		)
 		if err != nil {
 			log.Fatal(err)
@@ -38,7 +38,7 @@ func generateStyles(sections []Section) template.CSS {
 		for i, bb := range b {
 			b[i] = bb << 0x2
 		}
-		css.WriteString(fmt.Sprintf("\t.section-%s {\n\t\tbackground: #%X;\n\t}\n", strings.ToUpper(s.ID), b))
+		css.WriteString(fmt.Sprintf("\t.section-%s {\n\t\tbackground: #%X;\n\t}\n", strings.ToUpper(s.ID), b[:3]))
 	}
 	return template.CSS(css.String())
 }

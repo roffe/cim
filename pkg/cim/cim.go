@@ -77,41 +77,41 @@ func MustLoadBytes(filename string, b []byte) (*Bin, error) {
 
 // Cim eeprom binary layout
 type Bin struct {
-	filename               string        `bin:"-"`
-	MagicByte              byte          `bin:"len:1"`         // 0x20
-	ProgrammingDate        time.Time     `bin:"BCDDate,len:3"` // BCD Binary-Coded Decimal yy-mm-dd
-	SasOption              uint8         `bin:"len:1"`         // Steering Angle Sensor 0x03 = true
-	UnknownBytes1          []byte        `bin:"len:6"`
-	PartNo1                uint32        `bin:"len:4"` // End model (HW+SW)
-	PartNo1Suffix          string        `bin:"len:2"`
-	ConfigurationVersion   uint32        `bin:"len:4"`
-	PnBase1                uint32        `bin:"len:4"` // Base model (HW+boot)
-	PnBase1Suffix          string        `bin:"len:2"`
-	Vin                    Vin           `bin:"len:30"`
-	ProgrammingID          []string      `bin:"len:3,[len:10]"` // 3 last sps progrmming ids's groups of 10 characters each. 30 bytes
-	UnknownData3           UnknownData3  `bin:"len:88"`
-	Pin                    Pin           `bin:"len:20"`
-	UnknownData4           UnknownData4  `bin:"len:4"`
-	UnknownData1           UnknownData1  `bin:"len:44"`
-	Const1                 Const1        `bin:"len:10"`
-	Keys                   Keys          `bin:"len:74"`
-	UnknownData5           UnknownData5  `bin:"len:25"`
-	Sync                   Sync          `bin:"len:22"`
-	UnknownData6           UnknownData6  `bin:"len:44"`
-	UnknownData7           UnknownData7  `bin:"len:14"`
-	UnknownData8           UnknownData8  `bin:"len:8"`
-	UnknownData9           UnknownData9  `bin:"len:7"`
-	UnknownData2           UnknownData2  `bin:"len:14"`
-	SnSticker              uint64        `bin:"ReadSN,len:5"`   // BCD
-	ProgrammingFactoryDate time.Time     `bin:"BCDDateR,len:3"` // Reversed BCD date dd-mm-yy
-	UnknownBytes2          []byte        `bin:"len:3"`
-	DelphiPN               uint32        `bin:"le,len:4"` // Little endian, Delphi part number
-	UnknownBytes3          []byte        `bin:"len:2"`
-	PartNo                 uint32        `bin:"le,len:4"` // Little endian, SAAB part number (factory?)
-	UnknownData14          []byte        `bin:"len:3"`
-	PSK                    PSK           `bin:"len:14"`
-	UnknownData10          UnknownData10 `bin:"len:12"`
-	EOF                    byte          `bin:"len:1"`
+	filename               string        `bin:"-" json:"-"`
+	MagicByte              byte          `bin:"len:1" json:"magic_byte"`               // 0x20
+	ProgrammingDate        time.Time     `bin:"BCDDate,len:3" json:"programming_date"` // BCD Binary-Coded Decimal yy-mm-dd
+	SasOption              uint8         `bin:"len:1" json:"sas_option"`               // Steering Angle Sensor 0x03 = true
+	UnknownBytes1          []byte        `bin:"len:6" json:"unknown_bytes_1"`
+	PartNo1                uint32        `bin:"len:4" json:"partno1"` // End model (HW+SW)
+	PartNo1Rev             string        `bin:"len:2" json:"partno1_rev"`
+	ConfigurationVersion   uint32        `bin:"len:4" json:"configuration_version"`
+	PnBase1                uint32        `bin:"len:4" json:"pnbase1"` // Base model (HW+boot)
+	PnBase1Rev             string        `bin:"len:2" json:"pnbase1_rev"`
+	Vin                    Vin           `bin:"len:30" json:"vin"`
+	ProgrammingID          []string      `bin:"len:3,[len:10]" json:"programming_id"` // 3 last sps progrmming ids's groups of 10 characters each. 30 bytes
+	UnknownData3           UnknownData3  `bin:"len:88" json:"unknown_data_3"`
+	Pin                    Pin           `bin:"len:20" json:"pin"`
+	UnknownData4           UnknownData4  `bin:"len:4" json:"unknown_data_4"`
+	UnknownData1           UnknownData1  `bin:"len:44" json:"unknown_data_1"`
+	Const1                 Const1        `bin:"len:10" json:"const1"`
+	Keys                   Keys          `bin:"len:74" json:"keys"`
+	UnknownData5           UnknownData5  `bin:"len:25" json:"unknown_data_5"`
+	Sync                   Sync          `bin:"len:22" json:"sync"`
+	UnknownData6           UnknownData6  `bin:"len:44" json:"unknown_data_6"`
+	UnknownData7           UnknownData7  `bin:"len:14" json:"unknown_data_7"`
+	UnknownData8           UnknownData8  `bin:"len:8" json:"unknown_data_8"`
+	UnknownData9           UnknownData9  `bin:"len:7" json:"unknown_data_9"`
+	UnknownData2           UnknownData2  `bin:"len:14" json:"unknown_data_2"`
+	SnSticker              uint64        `bin:"ReadSN,len:5" json:"snsticker"`                  // BCD
+	ProgrammingFactoryDate time.Time     `bin:"BCDDateR,len:3" json:"programming_factory_date"` // Reversed BCD date dd-mm-yy
+	UnknownBytes2          []byte        `bin:"len:3" json:"unknown_bytes_2"`
+	DelphiPN               uint32        `bin:"le,len:4" json:"delphipn"` // Little endian, Delphi part number
+	UnknownBytes3          []byte        `bin:"len:2" json:"unknown_bytes_3"`
+	PartNo                 uint32        `bin:"le,len:4" json:"partno"` // Little endian, SAAB part number (factory?)
+	UnknownData14          []byte        `bin:"len:3" json:"unknown_data_14"`
+	PSK                    PSK           `bin:"len:14" json:"psk"`
+	UnknownData10          UnknownData10 `bin:"len:12" json:"unknown_data_10"`
+	EOF                    byte          `bin:"len:1" json:"eof"`
 }
 
 func (bin *Bin) programmingDate() []byte {

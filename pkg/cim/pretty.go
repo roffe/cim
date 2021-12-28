@@ -70,8 +70,8 @@ func (fw *Bin) Pretty() {
 
 	pn := s("Part numbers")
 	pn.AppendRows([]table.Row{
-		{"End model (HW+SW)", fmt.Sprintf("%d%s", fw.PartNo1, fw.PartNo1Suffix)},
-		{"Base model (HW+boot)", fmt.Sprintf("%d%s", fw.PnBase1, fw.PnBase1Suffix)},
+		{"End model (HW+SW)", fmt.Sprintf("%d%s", fw.PartNo1, fw.PartNo1Rev)},
+		{"Base model (HW+boot)", fmt.Sprintf("%d%s", fw.PnBase1, fw.PnBase1Rev)},
 		{"Delphi part number", fw.DelphiPN},
 		{"SAAB part number", fw.PartNo},
 		{"Configuration Version:", fw.ConfigurationVersion},

@@ -8,20 +8,20 @@ import (
 )
 
 type Keys struct {
-	IskHI1    []byte   `bin:"len:4"`
-	IskLO1    []byte   `bin:"len:2"`
-	Data1     [][]byte `bin:"len:5,[len:4]"`
-	Count1    uint8    `bin:"len:1"`
-	Constant1 []byte   `bin:"len:7"`
-	Errors1   uint8    `bin:"len:1"`
-	Checksum1 uint16   `bin:"le,len:2"`
-	IskHI2    []byte   `bin:"len:4"`
-	IskLO2    []byte   `bin:"len:2"`
-	Data2     [][]byte `bin:"len:5,[len:4]"`
-	Count2    uint8    `bin:"len:1"`
-	Constant2 []byte   `bin:"len:7"`
-	Errors2   uint8    `bin:"len:1"`
-	Checksum2 uint16   `bin:"le,len:2"` // CRC16 MCRF4XX
+	IskHI1    []byte   `bin:"len:4" json:"isk_hi1"`
+	IskLO1    []byte   `bin:"len:2" json:"isk_lo1"`
+	Data1     [][]byte `bin:"len:5,[len:4]" json:"data1"`
+	Count1    uint8    `bin:"len:1" json:"count1"`
+	Constant1 []byte   `bin:"len:7" json:"constant1"`
+	Errors1   uint8    `bin:"len:1" json:"errors1"`
+	Checksum1 uint16   `bin:"le,len:2" json:"checksum1"`
+	IskHI2    []byte   `bin:"len:4" json:"isk_hi2"`
+	IskLO2    []byte   `bin:"len:2" json:"isk_lo2"`
+	Data2     [][]byte `bin:"len:5,[len:4]" json:"data2"`
+	Count2    uint8    `bin:"len:1" json:"count2"`
+	Constant2 []byte   `bin:"len:7" json:"constant2"`
+	Errors2   uint8    `bin:"len:1" json:"errors2"`
+	Checksum2 uint16   `bin:"le,len:2" json:"checksum2"` // CRC16 MCRF4XX
 } // 74 bytes
 
 // Set key count

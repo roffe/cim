@@ -7,8 +7,8 @@ import (
 )
 
 type Sync struct {
-	Data     [][]byte `bin:"len:5,[len:4]"`
-	Checksum uint16   `bin:"le,len:2"`
+	Data     [][]byte `bin:"len:5,[len:4]" json:"data"`
+	Checksum uint16   `bin:"le,len:2" json:"checksum"`
 } // 22 bytes
 
 func (s *Sync) SetData(no uint8, data []byte) {

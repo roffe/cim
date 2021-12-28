@@ -7,11 +7,11 @@ import (
 )
 
 type PSK struct {
-	Low      []byte `bin:"len:4"`
-	High     []byte `bin:"len:2"`
-	Constant []byte `bin:"len:4"`
-	Unknown  []byte `bin:"len:2"`
-	Checksum uint16 `bin:"le,len:2"` // CRC16 MCRF4XX
+	Low      []byte `bin:"len:4" json:"low"`
+	High     []byte `bin:"len:2" json:"high"`
+	Constant []byte `bin:"len:4" json:"constant"`
+	Unknown  []byte `bin:"len:2" json:"unknown"`
+	Checksum uint16 `bin:"le,len:2" json:"checksum"` // CRC16 MCRF4XX
 } // 14 bytes
 
 func (p *PSK) validate() error {

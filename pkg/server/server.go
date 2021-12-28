@@ -6,50 +6,58 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
+	"os"
+	"os/exec"
+	"runtime"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/roffe/cim/pkg/cim"
 )
 
-var templateHelpers = template.FuncMap{
-	"printHex": func(v interface{}) template.HTML {
-		return template.HTML(fmt.Sprintf("%X", v))
-	},
-	"print": func(v interface{}) template.HTML {
-		return template.HTML(fmt.Sprintf("%s", v))
-	},
-	"isoDate": func(t time.Time) template.HTML {
-		return template.HTML(t.Format(cim.IsoDate))
-	},
-	"boolChecked": func(b bool) template.HTML {
-		if b {
-			return template.HTML("checked")
-		}
-		return template.HTML("")
-	},
-	"keyOffset": func(factor int) template.HTML {
-		return template.HTML(fmt.Sprintf("%d", 259+(4*factor)))
-	},
-}
-
 // embed templates into binary
 //go:embed templates/*.tmpl
 var tp embed.FS
 
-// embed favicon.ico
-//go:embed favicon.ico
-var favicon []byte
-
-func Run() error {
-	r := gin.Default()
-
-	// Load templates
-	if tmpl, err := template.New("views").Funcs(templateHelpers).ParseFS(tp, "templates/*.tmpl"); err == nil {
-		r.SetHTMLTemplate(tmpl)
-	} else {
+func Run(enableShutdown bool) error {
+	r, err := setupRouter(enableShutdown)
+	if err != nil {
 		return err
+	}
+
+	go func() {
+		time.Sleep(500 * time.Millisecond)
+		openbrowser("http://localhost:8080")
+	}()
+
+	return r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+}
+
+func openbrowser(url string) {
+	var err error
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		log.Println("failed to open browser for you:", err)
+	}
+
+}
+
+func setupRouter(enableShutdown bool) (*gin.Engine, error) {
+	r := gin.Default()
+	// Load templates
+	if err := loadTemplates(r); err != nil {
+		return nil, err
 	}
 
 	// Set upload limit for multipart form
@@ -59,15 +67,49 @@ func Run() error {
 	r.POST("/save", saveHandler)
 	r.POST("/", uploadHandler)
 	r.POST("/update", updateHandler)
-	r.GET("/favicon.ico", func(c *gin.Context) {
-		if _, err := c.Writer.Write(favicon); err != nil {
-			c.String(http.StatusInternalServerError, "failed to load favicon.ico")
-			return
-		}
-		c.Status(200)
-	})
+	r.GET("/favicon.ico", faviconHandler)
 
-	return r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	if enableShutdown {
+		r.GET("/shutdown", func(c *gin.Context) {
+			go func() {
+				time.Sleep(300 * time.Millisecond)
+				os.Exit(0)
+			}()
+			c.String(200, "ok")
+		})
+	}
+	return r, nil
+}
+
+// Load templates from embed fs and add helper funcs to them
+func loadTemplates(r *gin.Engine) error {
+	var templateHelpers = template.FuncMap{
+		"printHex": func(v interface{}) template.HTML {
+			return template.HTML(fmt.Sprintf("%X", v))
+		},
+		"print": func(v interface{}) template.HTML {
+			return template.HTML(fmt.Sprintf("%s", v))
+		},
+		"isoDate": func(t time.Time) template.HTML {
+			return template.HTML(t.Format(cim.IsoDate))
+		},
+		"boolChecked": func(b bool) template.HTML {
+			if b {
+				return template.HTML("checked")
+			}
+			return template.HTML("")
+		},
+		"keyOffset": func(factor int) template.HTML {
+			return template.HTML(fmt.Sprintf("%d", 259+(4*factor)))
+		},
+	}
+
+	if tmpl, err := template.New("views").Funcs(templateHelpers).ParseFS(tp, "templates/*.tmpl"); err == nil {
+		r.SetHTMLTemplate(tmpl)
+	} else {
+		return err
+	}
+	return nil
 }
 
 func getFileFromCtx(c *gin.Context) ([]byte, string, int64, error) {

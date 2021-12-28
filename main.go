@@ -13,8 +13,9 @@ import (
 )
 
 var (
-	outputMode = "pretty"
-	debugMode  = false
+	outputMode     = "pretty"
+	debugMode      = false
+	enableShutdown = true
 )
 
 func init() {
@@ -22,6 +23,7 @@ func init() {
 
 	flag.StringVarP(&outputMode, "output", "o", outputMode, "pretty|json|string")
 	flag.BoolVarP(&debugMode, "debug", "d", debugMode, "true|false")
+	flag.BoolVarP(&enableShutdown, "shutdown", "s", enableShutdown, "true|false enable shutdown api")
 	flag.Parse()
 
 	if debugMode {
@@ -60,7 +62,7 @@ func main() {
 
 	// Run web ui
 	fmt.Println("Server started @ http://localhost:8080")
-	if err := server.Run(); err != nil {
+	if err := server.Run(enableShutdown); err != nil {
 		log.Fatal(err)
 	}
 }

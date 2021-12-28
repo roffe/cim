@@ -7,8 +7,8 @@ import (
 )
 
 type Const1 struct {
-	Data     []byte `bin:"len:8"`
-	Checksum uint16 `bin:"le,len:2"` // CRC16 MCRF4XX
+	Data     []byte `bin:"len:8" json:"data"`
+	Checksum uint16 `bin:"le,len:2" json:"checksum"` // CRC16 MCRF4XX
 } // 10 bytes
 
 func (c *Const1) validate() error {

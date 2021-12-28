@@ -8,12 +8,12 @@ import (
 )
 
 type Pin struct {
-	Data1     []byte `bin:"len:4"` // LE
-	Unknown1  []byte `bin:"len:4"`
-	Checksum1 uint16 `bin:"le,len:2"`
-	Data2     []byte `bin:"len:4"` // LE
-	Unknown2  []byte `bin:"len:4"`
-	Checksum2 uint16 `bin:"le,len:2"`
+	Data1     []byte `bin:"len:4" json:"data1"` // LE
+	Unknown1  []byte `bin:"len:4" json:"unknown1"`
+	Checksum1 uint16 `bin:"le,len:2" json:"checksum1"`
+	Data2     []byte `bin:"len:4" json:"data2"` // LE
+	Unknown2  []byte `bin:"len:4" json:"unknown2"`
+	Checksum2 uint16 `bin:"le,len:2" json:"checksum2"`
 } // 20 bytes
 
 func (p *Pin) validate() error {
