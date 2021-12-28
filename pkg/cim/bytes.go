@@ -165,8 +165,7 @@ func (bin *Bin) programmingDate() []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
-	out := bcd.FromUint32(uint32(p))
-	return out
+	return bcd.FromUint32(uint32(p))
 }
 
 func (bin *Bin) programmingFactoryDate() []byte {
@@ -176,6 +175,5 @@ func (bin *Bin) programmingFactoryDate() []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
-	out := bcd.FromUint32(uint32(p))
-	return out
+	return bcd.FromUint32(uint32(p))
 }
