@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io/ioutil"
+	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/albenik/bcd"
@@ -111,6 +114,24 @@ type Bin struct {
 	EOF                    byte          `bin:"len:1"` //0x00
 }
 
+func (bin *Bin) programmingDate() []byte {
+	return pDateUint32BCD("060102", bin.ProgrammingDate)
+}
+
+func (bin *Bin) programmingFactoryDate() []byte {
+	return pDateUint32BCD("020106", bin.ProgrammingFactoryDate)
+}
+
+func pDateUint32BCD(format string, date time.Time) []byte {
+	d := date.Format(format)
+	d = strings.TrimLeft(d, "0")
+	p, err := strconv.ParseUint(d, 0, 32)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return bcd.FromUint32(uint32(p))
+}
+
 func (bin *Bin) Json() ([]byte, error) {
 	return json.MarshalIndent(bin, "", "  ")
 }
@@ -149,22 +170,22 @@ func (bin *Bin) SasOpt() bool {
 }
 
 func (*Bin) BCDDate(r binstruct.Reader) (time.Time, error) {
-	_, b, err := r.ReadBytes(3)
-	if err != nil {
-		return time.Time{}, err
-	}
-	t := fmt.Sprintf("%02X-%02X-%02X", b[0], b[1:2], b[2:3])
-	return time.Parse("06-01-02", t) // yy-mm-dd
+	return bcdDate("06-01-02", r)
 }
 
 func (*Bin) BCDDateR(r binstruct.Reader) (time.Time, error) {
+	return bcdDate("02-01-06", r)
+}
+
+func bcdDate(format string, r binstruct.Reader) (time.Time, error) {
 	_, b, err := r.ReadBytes(3)
 	if err != nil {
 		return time.Time{}, err
 	}
-	t := fmt.Sprintf("%02X-%02X-%02X", b[0], b[1:2], b[2:3])
-	return time.Parse("02-01-06", t) // dd-mm-yy
-
+	return time.Parse(
+		format,
+		fmt.Sprintf("%02X-%02X-%02X", b[0], b[1:2], b[2:3]), // dd-mm-yy
+	)
 }
 
 // Return Serial sticker as uint64, stored as 5byte Binary-Coded Decimal (BCD)

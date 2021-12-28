@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"io"
-	"log"
-	"strconv"
 	"strings"
 
 	"github.com/albenik/bcd"
@@ -15,6 +13,18 @@ type writeOp struct {
 	w io.Writer        // writer
 	o binary.ByteOrder // byte-order
 	v interface{}      // data
+}
+
+func (bin *Bin) XORBytes() ([]byte, error) {
+	b, err := bin.Bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	for i, bb := range b {
+		b[i] = bb ^ 0xFF
+	}
+	return b, nil
 }
 
 // Return the byte representation of the binary
@@ -156,24 +166,4 @@ func (bin *Bin) Bytes() ([]byte, error) {
 	}
 
 	return o.Bytes(), nil
-}
-
-func (bin *Bin) programmingDate() []byte {
-	d := bin.ProgrammingDate.Format("060102")
-	d = strings.TrimLeft(d, "0")
-	p, err := strconv.ParseUint(d, 0, 32)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return bcd.FromUint32(uint32(p))
-}
-
-func (bin *Bin) programmingFactoryDate() []byte {
-	d := bin.ProgrammingFactoryDate.Format("020106")
-	d = strings.TrimLeft(d, "0")
-	p, err := strconv.ParseUint(d, 0, 32)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return bcd.FromUint32(uint32(p))
 }
