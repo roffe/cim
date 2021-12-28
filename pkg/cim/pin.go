@@ -17,7 +17,6 @@ type Pin struct {
 } // 20 bytes
 
 func (p *Pin) validate() error {
-
 	p1crc, p2crc := p.Crc16()
 
 	if p.Checksum1 != p1crc {
@@ -40,10 +39,8 @@ func (p *Pin) validate() error {
 }
 
 func (p *Pin) Crc16() (uint16, uint16) {
-	p1 := crc16.Calc(append(p.Data1[:], p.Unknown1[:]...))
-	p2 := crc16.Calc(append(p.Data2[:], p.Unknown2[:]...))
-	return p1, p2
-
+	return crc16.Calc(append(p.Data1[:], p.Unknown1[:]...)),
+		crc16.Calc(append(p.Data2[:], p.Unknown2[:]...))
 }
 
 func (p *Pin) Set(pin string) error {
@@ -56,8 +53,7 @@ func (p *Pin) Set(pin string) error {
 		return fmt.Errorf("invalid pin: %v", err)
 	}
 
-	p.Data1 = b
-	p.Data2 = b
+	p.Data1, p.Data2 = b, b
 	p.Checksum1, p.Checksum2 = p.Crc16()
 
 	return nil
