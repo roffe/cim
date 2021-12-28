@@ -44,68 +44,79 @@ func generateStyles(sections []Section) template.CSS {
 }
 
 func generateSections(fw *cim.Bin) []Section {
+	// Byte position in the file
+	var offset int
 	var sections []Section
-	offset := 0x00
-	var itr func(string, reflect.Value)
-	itr = func(prefix string, valueOf reflect.Value) {
+
+	// create a empty anonymous function
+	var loop func(string, reflect.Value)
+
+	// Define the function with references to itself via anonymous function
+	loop = func(prefix string, valueOf reflect.Value) {
 		for i := 0; i < valueOf.NumField(); i++ {
 			tag := valueOf.Type().Field(i).Tag.Get("bin")
 			if tag == "-" || tag == "" {
 				continue
 			}
+
 			field := valueOf.Field(i)
-			tname := valueOf.Type().Field(i).Type.String()
-			switch tname {
+			fieldName := valueOf.Type().Field(i).Name
+			typeName := valueOf.Type().Field(i).Type.String()
+
+			switch typeName {
+			// time.Time is a struct and we don't want to itterate over any sub structures in it
 			case "time.Time":
 			default:
+				// Recurse any structures
 				if field.Kind() == reflect.Struct {
-					itr(valueOf.Type().Field(i).Name, field)
+					loop(fieldName, field)
 					continue
 				}
 			}
-			parts := strings.Split(tag, ",")
+			// Keep track of previous bin len value for multi dimension arrays
 			var previous int
-			for _, p := range parts {
-				var length int
-				var nlength int
-				fmt.Sscanf(p, "[len:%d]", &nlength)
-				if nlength > 0 {
-					asd := (previous*nlength - previous)
-					offset += asd
+			for _, p := range strings.Split(tag, ",") {
+				var length, nlength int
+				if _, err := fmt.Sscanf(p, "[len:%d]", &nlength); err == nil {
+					structLen := (previous*nlength - previous)
+					offset += structLen
 					sections[len(sections)-1].Length = previous * nlength
 					previous = 0
 					continue
 				}
-				fmt.Sscanf(p, "len:%d", &length)
-				if length == 0 {
+
+				if _, err := fmt.Sscanf(p, "len:%d", &length); err != nil {
 					continue
 				}
 				previous = length
-
-				var fname string
-				if prefix == "" {
-					fname = valueOf.Type().Field(i).Name
-
-				} else {
-					fname = fmt.Sprintf("%s_%s", prefix, valueOf.Type().Field(i).Name)
-					fname = strings.TrimSuffix(fname, "1")
-					fname = strings.TrimSuffix(fname, "2")
-				}
-				fname = strings.ToUpper(fname)
-
+				fname := genFieldName(prefix, fieldName)
 				sections = append(sections, Section{
 					ID:       fname,
 					Start:    offset,
 					Length:   length,
-					Type:     tname,
+					Type:     typeName,
 					Checksum: strings.Contains(fname, "CHECKSUM"),
 				})
 				offset += length
 			}
 		}
 	}
-
-	itr("", reflect.ValueOf(*fw))
+	// start the recursing
+	loop("", reflect.ValueOf(*fw))
 
 	return sections
+}
+
+func genFieldName(prefix, name string) string {
+	var fname string
+	if prefix == "" {
+		fname = name
+
+	} else {
+		fname = fmt.Sprintf("%s_%s", prefix, name)
+		// Trim bank numbers at end so we get joined hilight sections
+		fname = strings.TrimSuffix(fname, "1")
+		fname = strings.TrimSuffix(fname, "2")
+	}
+	return strings.ToUpper(fname)
 }

@@ -14,6 +14,5 @@ goto http://localhost:8080 in browser of choice
 
 ## Todo
 
-* Implement all crc checks
 * Implement update bin function
 * Fix ISK High & Low

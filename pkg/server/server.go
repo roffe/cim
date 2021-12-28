@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"embed"
 	"encoding/base64"
 	"fmt"
 	"html/template"
@@ -36,11 +37,16 @@ var templateHelpers = template.FuncMap{
 	},
 }
 
+// content holds our static web server content.
+//go:embed templates/*.tmpl
+var tp embed.FS
+
 func Run() error {
 	r := gin.Default()
 	// Load templates
 	//r.LoadHTMLGlob("templates/*.tmpl")
-	if tmpl, err := template.New("projectViews").Funcs(templateHelpers).ParseGlob("templates/*.tmpl"); err == nil {
+	//if tmpl, err := template.New("projectViews").Funcs(templateHelpers).ParseGlob("templates/*.tmpl"); err == nil {
+	if tmpl, err := template.New("").Funcs(templateHelpers).ParseFS(tp, "templates/*.tmpl"); err == nil {
 		r.SetHTMLTemplate(tmpl)
 	} else {
 		return err
@@ -52,6 +58,7 @@ func Run() error {
 	r.GET("/", func(c *gin.Context) { c.HTML(http.StatusOK, "upload.tmpl", nil) })
 	r.POST("/save", saveHandler)
 	r.POST("/", uploadHandler)
+	r.POST("/update", updateHandler)
 
 	return r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
@@ -101,14 +108,10 @@ func uploadHandler(c *gin.Context) {
 		if pos == 0 {
 			hexRows.WriteString(fmt.Sprintf(`<div class="hexRow"><div class="addrColumn"><b>%03X</b></div><div class="hexColumns">`, offset))
 		}
-
 		hexRows.WriteString(fmt.Sprintf(`<div class="hexByte byte-%d" data-i="%d">%02X</div>`+"\n", offset, offset, bb))
 		asciiColumns.WriteString(fmt.Sprintf(`<div class="asciiByte byte-%d" data-i="%d">%s</div>`+"\n", offset, offset, psafe(bb)))
-
 		if pos == width {
-			hexRows.WriteString(`</div><div class="asciiColumns">` + "\n")
-			hexRows.WriteString(asciiColumns.String())
-			hexRows.WriteString("</div></div>")
+			hexRows.WriteString(`</div><div class="asciiColumns">` + "\n" + asciiColumns.String() + "</div></div>")
 			asciiColumns.Reset()
 			pos = 0
 			offset++
@@ -123,16 +126,11 @@ func uploadHandler(c *gin.Context) {
 		for i := pos; i <= width; i++ {
 			hexRows.WriteString(`<div class="fillByte">&nbsp;&nbsp;</div>`)
 		}
-		hexRows.WriteString("</div>")
-		hexRows.WriteString(`<div class="asciiColumns">` + "\n")
-		hexRows.WriteString(asciiColumns.String())
-		hexRows.WriteString("</div></div>\n")
+		hexRows.WriteString(`</div><div class="asciiColumns">` + "\n" + asciiColumns.String() + "</div></div>\n")
 		asciiColumns.Reset()
 	}
 
 	hexRows.WriteString("</div>")
-
-	b64 := base64.StdEncoding.EncodeToString(fwBytes)
 
 	sections := generateSections(fw)
 	styles := generateStyles(sections)
@@ -151,11 +149,15 @@ func uploadHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "hex.tmpl", gin.H{
 		"filename": filepath.Base(filename),
 		"fw":       fw,
-		"B64":      b64,
+		"B64":      base64.StdEncoding.EncodeToString(fwBytes),
 		"Hexview":  template.HTML(hexRows.String()),
 		"sections": template.JS(out.String()),
 		"styles":   template.CSS(styles),
 	})
+}
+
+func updateHandler(c *gin.Context) {
+
 }
 
 func saveHandler(c *gin.Context) {
