@@ -8,20 +8,20 @@ import (
 )
 
 type Keys struct {
-	IskHI1     []byte   `bin:"len:4"`
-	IskLO1     []byte   `bin:"len:2"`
-	Data1      [][]byte `bin:"len:5,[len:4]"`
-	Count1     uint8    `bin:"len:1"`
-	Constant1  []byte   `bin:"len:7"`
-	KeyErrors1 uint8    `bin:"len:1"`
-	Checksum1  uint16   `bin:"le,len:2"`
-	IskHI2     []byte   `bin:"len:4"`
-	IskLO2     []byte   `bin:"len:2"`
-	Data2      [][]byte `bin:"len:5,[len:4]"`
-	Count2     uint8    `bin:"len:1"`
-	Constant2  []byte   `bin:"len:7"`
-	Errors2    uint8    `bin:"len:1"`
-	Checksum2  uint16   `bin:"le,len:2"` // CRC16 MCRF4XX
+	IskHI1    []byte   `bin:"len:4"`
+	IskLO1    []byte   `bin:"len:2"`
+	Data1     [][]byte `bin:"len:5,[len:4]"`
+	Count1    uint8    `bin:"len:1"`
+	Constant1 []byte   `bin:"len:7"`
+	Errors1   uint8    `bin:"len:1"`
+	Checksum1 uint16   `bin:"le,len:2"`
+	IskHI2    []byte   `bin:"len:4"`
+	IskLO2    []byte   `bin:"len:2"`
+	Data2     [][]byte `bin:"len:5,[len:4]"`
+	Count2    uint8    `bin:"len:1"`
+	Constant2 []byte   `bin:"len:7"`
+	Errors2   uint8    `bin:"len:1"`
+	Checksum2 uint16   `bin:"le,len:2"` // CRC16 MCRF4XX
 } // 74 bytes
 
 // Set key count
@@ -71,8 +71,8 @@ func (k *Keys) validate() error {
 		return fmt.Errorf("key count missmatch in data banks %d | %d", k.Count1, k.Count2)
 	}
 
-	if k.KeyErrors1 != k.Errors2 {
-		return fmt.Errorf("key errors missmatch in data banks %d | %d", k.KeyErrors1, k.Errors2)
+	if k.Errors1 != k.Errors2 {
+		return fmt.Errorf("key errors missmatch in data banks %d | %d", k.Errors1, k.Errors2)
 	}
 
 	if !bytes.Equal(k.Data1[0], k.Data2[0]) {
@@ -117,7 +117,7 @@ func (k *Keys) Checksum() (uint16, uint16) {
 	}
 	d1.WriteByte(k.Count1)
 	d1.Write(k.Constant1)
-	d1.WriteByte(k.KeyErrors1)
+	d1.WriteByte(k.Errors1)
 	k1crc := crc16.Calc(d1.Bytes())
 
 	d2 := bytes.NewBuffer([]byte{})

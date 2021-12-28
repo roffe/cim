@@ -1,6 +1,7 @@
 package cim
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/roffe/cim/pkg/crc16"
@@ -188,12 +189,16 @@ type UnknownData10 struct {
 }
 
 func (u *UnknownData10) validate() error {
+	if bytes.Equal(u.Data1, []byte{0x00, 0x00, 0x00, 0x00}) && bytes.Equal(u.Data2, []byte{0x00, 0x00, 0x00, 0x00}) {
+		return nil
+	}
+
 	c1, c2 := u.Crc16()
 	if u.Checksum1 != c1 {
-		return fmt.Errorf("UnknownData10 data1 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData10 data1 checksum does not match calculated checksum %X, %X, %X", u.Data1, u.Checksum1, c1)
 	}
 	if u.Checksum2 != c2 {
-		return fmt.Errorf("UnknownData10 data2 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData10 data2 checksum does not match calculated checksum %X, %X, %X", u.Data1, u.Checksum2, c2)
 	}
 	return nil
 }

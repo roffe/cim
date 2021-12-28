@@ -10,7 +10,7 @@ import (
 
 type Vin struct {
 	Data     string `bin:"len:17"` // Vin as ASCII
-	Counter  uint8  `bin:"len:1"`  // unknown value, seems to be a counter?
+	Value    uint8  `bin:"len:1"`  // unknown value, seems to be a counter?
 	Unknown  []byte `bin:"len:9"`
 	SpsCount uint8  `bin:"len:1"`
 	Checksum uint16 `bin:"le,len:2"` // CRC16 MCRF4XX
@@ -28,7 +28,7 @@ func (v *Vin) validate() error {
 func (v *Vin) Crc16() uint16 {
 	b := bytes.NewBuffer(nil)
 	b.Write([]byte(v.Data))
-	b.WriteByte(v.Counter)
+	b.WriteByte(v.Value)
 	b.Write(v.Unknown)
 	b.WriteByte(v.SpsCount)
 	return crc16.Calc(b.Bytes())

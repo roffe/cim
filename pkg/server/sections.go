@@ -17,12 +17,12 @@ type Section struct {
 	Start  int    `json:"start"`
 	Length int    `json:"length"`
 	//Confirmed bool
-	//Checksum  bool
-	Type string `json:"type"`
+	Checksum bool
+	Type     string `json:"type"`
 }
 
 func (s *Section) String() string {
-	return fmt.Sprintf(`{id: "%s", start: 0x%02X, length: %d, type: "%s"}`, s.ID, s.Start, s.Length, s.Type)
+	return fmt.Sprintf(`{id: "%s", start: 0x%02X, length: %d, type: "%s", checksum: %t}`, s.ID, s.Start, s.Length, s.Type, s.Checksum)
 }
 
 func generateStyles(sections []Section) template.CSS {
@@ -91,11 +91,14 @@ func generateSections(fw *cim.Bin) []Section {
 					fname = strings.TrimSuffix(fname, "1")
 					fname = strings.TrimSuffix(fname, "2")
 				}
+				fname = strings.ToUpper(fname)
+
 				sections = append(sections, Section{
-					ID:     strings.ToUpper(fname),
-					Start:  offset, //fmt.Sprintf("0x%X", offset)
-					Length: length,
-					Type:   tname,
+					ID:       fname,
+					Start:    offset,
+					Length:   length,
+					Type:     tname,
+					Checksum: strings.Contains(fname, "CHECKSUM"),
 				})
 				offset += length
 			}

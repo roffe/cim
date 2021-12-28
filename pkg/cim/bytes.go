@@ -38,7 +38,7 @@ func (bin *Bin) Bytes() ([]byte, error) {
 		{o, binary.BigEndian, []byte(bin.PnBase1Suffix)},
 
 		{o, binary.BigEndian, []byte(bin.Vin.Data)},
-		{o, binary.BigEndian, bin.Vin.Counter},
+		{o, binary.BigEndian, bin.Vin.Value},
 		{o, binary.BigEndian, bin.Vin.Unknown},
 		{o, binary.LittleEndian, bin.Vin.SpsCount},
 		{o, binary.LittleEndian, bin.Vin.Checksum},
@@ -77,7 +77,7 @@ func (bin *Bin) Bytes() ([]byte, error) {
 		{o, binary.BigEndian, bin.Keys.Data1[4]},
 		{o, binary.LittleEndian, bin.Keys.Count1},
 		{o, binary.BigEndian, bin.Keys.Constant1},
-		{o, binary.LittleEndian, bin.Keys.KeyErrors1},
+		{o, binary.LittleEndian, bin.Keys.Errors1},
 		{o, binary.LittleEndian, bin.Keys.Checksum1},
 		{o, binary.BigEndian, bin.Keys.IskHI2},
 		{o, binary.BigEndian, bin.Keys.IskLO2},

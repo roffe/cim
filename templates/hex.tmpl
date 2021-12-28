@@ -26,27 +26,26 @@
         <hr>
         <div class="row">
             <div class="col">
-                        <form>
-                        <b>Vin:</b> <input class="field byte-28" type="text" value="{{.fw.Vin.Data}}"><br><br>
-                        <b>Model Year:</b> {{.fw.ModelYear}}<br><br>
-                        <b>Pin:</b> <input class="field byte-175" type="text" value="{{printHex .fw.Pin.Data1}}"><br><br>
-                        <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4" type="checkbox" id="sas_opt" name="sas_opt" {{boolChecked .fw.SasOpt}}><br>
+                 
+                        <b>Vin:</b> <input class="field byte-28" data-i="28" type="text" maxlength="17" size="17" value="{{.fw.Vin.Data}}">&nbsp;<b>Model Year:</b> {{.fw.ModelYear}}<br><br>
+                        <b>Pin:</b> <input class="field byte-175" data-i="175" type="text" maxlength="8" size="8" value="{{printHex .fw.Pin.Data1}}"><br><br>
+                        <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4" data-i="4" type="checkbox" id="sas_opt" name="sas_opt" {{boolChecked .fw.SasOpt}}><br>
                         <hr>
-                        <b>Programmed keys:</b> <input class="field byte-279" style="width: 35px;" type="number" value="{{.fw.Keys.Count1}}"><br><br>
+                        <b>Programmed keys:</b> <input class="field byte-279" data-i="279" style="width: 35px;" min="0" max="5" type="number" value="{{.fw.Keys.Count1}}"><br><br>
                         {{range $key, $val := .fw.Keys.Data1}}
-                        <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text" value="{{printHex $val}}"><br>
+                        <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text" data-i="{{keyOffset $key}}" maxlength="8" size="8" value="{{printHex $val}}"><br>
                         {{end}}
                         <hr>
                         <b>Programming history:</b><br>
                         <ul>
-                        <li><b>Last programming date:</b> <span class="field byte-2">{{isoDate .fw.ProgrammingDate}}</span></li>
+                        <li><b>Last programming date:</b> <span class="field byte-2" data-i="2" >{{isoDate .fw.ProgrammingDate}}</span></li>
                         {{if eq .fw.Vin.SpsCount 0}}
                             <li><b>Factory programming only</b></li>
                         {{else}}
-                            <li><b>SPS Counter:</b> <span class="field byte-54">{{.fw.Vin.SpsCount}}</span></li>
+                            <li><b>SPS Counter:</b> <span class="field byte-54" data-i="54">{{.fw.Vin.SpsCount}}</span></li>
                             <ol>
                             {{range $val := .fw.ProgrammingID}}
-                                <li><span class="field byte-57">{{$val}}</span></li>
+                                <li><span class="field byte-57" data-i="57">{{$val}}</span></li>
                             {{end}}
                             </ol>
                         {{end}}
@@ -54,28 +53,28 @@
             </div>
             <div class="col">
                         <b>Remotes:</b><br>
-                        <b>ISK High:</b> <input class="field byte-253 section-ISK_HI" type="text" value="{{printHex .fw.Keys.IskHI1}}"><br>
-                        <b>ISK Low:</b>&nbsp; <input class="field byte-257 section-ISK_LO" type="text" value="{{printHex .fw.Keys.IskLO1}}"><br><br>
+                        <b>ISK High:</b> <input class="field byte-253" data-i="253" type="text" maxlength="8" size="8" value="{{printHex .fw.Keys.IskHI1}}"><br>
+                        <b>ISK Low:</b>&nbsp; <input class="field byte-257" data-i="257" type="text" maxlength="4" size="4" value="{{printHex .fw.Keys.IskLO1}}"><br><br>
                         <b>PCF:</b> <i>6732F2C5</i><br>
                         <hr>
                         <b>Sync:</b><br>
                         {{range $val := .fw.Sync.Data}}
-                        <input class="field byte-352 section-REMOTE_SYNC" type="text" value="{{printHex $val}}">
+                        <input class="field byte-352" type="text" data-i="352" maxlength="8" size="8" value="{{printHex $val}}">
                         {{end}}<br>
                         <br>
                         <hr>
-                        <b>Serial sticker:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-461 section-SN_STICKER" type="text" value="{{.fw.SnSticker}}"><br>
-                        <b>Factory programming date:</b> <input class="field byte-466 section-PROGRAMMING_FACTORY_DATE" type="text" value="{{isoDate .fw.ProgrammingFactoryDate}}"><br>
+                        <b>Serial sticker:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-461" type="text" data-i="461" maxlength="10" size="10" value="{{.fw.SnSticker}}"><br>
+                        <b>Factory programming date:</b> <input class="field byte-466" type="text" data-i="466" maxlength="10" size="10" value="{{isoDate .fw.ProgrammingFactoryDate}}"><br>
                         <hr>
                         <b>Part numbers:</b><br>
                         <ul>
-                        <li>End model (HW+SW):&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-11 section-PN_SAAB1" type="text" value="{{.fw.PartNo1}}{{.fw.PartNo1Suffix}}"></li>
-	                    <li>Base model (HW+boot):&nbsp; <input class="field byte-21 section-PN_BASE1" type="text" value="{{.fw.PnBase1}}{{.fw.PnBase1Suffix}}"></li>
-	                    <li>Delphi part number:&nbsp;&nbsp;&nbsp; <input class="field byte-472 section-PN_DELPHI" type="text" value="{{.fw.DelphiPN}}"></li>
-	                    <li>SAAB part number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-478 section-PN_SAAB2" type="text" value="{{.fw.PartNo}}"></li>
-	                    <li>Configuration Version: <input class="field byte-17 section-CONFIGURATION_VERSION" type="text" value="{{.fw.ConfigurationVersion}}"></li>
+                        <li>End model (HW+SW):&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-11" type="text" data-i="11" maxlength="8" size="8" value="{{.fw.PartNo1}}"><input class="field byte-15" type="text" data-i="15" maxlength="2" size="2" value="{{.fw.PartNo1Suffix}}"></li>
+	                    <li>Base model (HW+boot):&nbsp; <input class="field byte-21" type="text" data-i="21" maxlength="8" size="8" value="{{.fw.PnBase1}}"><input class="field byte-25" type="text" data-i="25" maxlength="2" size="2" value="{{.fw.PnBase1Suffix}}"></li>
+	                    <li>Delphi part number:&nbsp;&nbsp;&nbsp; <input class="field byte-472" data-i="472" type="text" maxlength="8" size="8" value="{{.fw.DelphiPN}}"></li>
+	                    <li>SAAB part number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-478" data-i="478" maxlength="8" size="8" type="text" value="{{.fw.PartNo}}"></li>
+	                    <li>Configuration Version: <input class="field byte-17" type="text" data-i="17" maxlength="8" size="8" value="{{.fw.ConfigurationVersion}}"></li>
                         </ul>
-                    </form>               
+                                
             </div>
         </div>
         <div class="row">
@@ -100,59 +99,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-    <script type="application/javascript">
-        $('.hexByte, .asciiByte, .field').hover(function () {
-            var i = $(this).data('i');
-            var section = $(this).data('section');
-            if (section) {
-                $('.section-' + section.id).toggleClass('hoverSection', true);
-            } else {
-                $('.byte-' + i).toggleClass('hover', true);
-            }
-        }, function () {
-            var i = $(this).data('i');
-            var section = $(this).data('section');
-            if (section) {
-                $('.section-' + section.id).toggleClass('hoverSection', false);
-            } else {
-                $('.byte-' + i).toggleClass('hover', false);
-            }
-        });
-
-        {{.sections}}
-
-        for (let i = 0; i < sections.length; i++) {
-            let section = sections[i];
-            section.title = section.id;
-            if (section.type) {
-                section.title += ` (${section.type})`;
-            }
-            if (section.confirmed) {
-                section.title += ' [Confirmed]';
-            }
-            for (let byte = 0; byte < section.length; byte++) {
-                $bytes = $('.byte-' + (section.start + byte));
-                //if (section.confirmed) {
-                //    $bytes.addClass('confirmed');
-                //}
-                $bytes.addClass('section').addClass('section-' + section.id).data('section', section);
-                if (section.checksum) {
-                    $bytes.addClass('checksum');
-                }
-
-                $bytes.attr('title', section.title);
-                $bytes.map(function (byte) {
-                    let el = $bytes[byte],
-                        $el = $(el),
-                        title = $el.attr('title');
-
-                    title = '0x' + (1 * $el.data('i')).toString(16) + ': ' + title;
-                    $($bytes[byte]).attr('title', title);
-                    var tooltip = new bootstrap.Tooltip($bytes[byte]);
-                });
-            }
-        }
-    </script>
+    {{template "scripts.tmpl" .}}
 </body>
 
 </html>

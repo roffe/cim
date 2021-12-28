@@ -1,0 +1,49 @@
+<script type="application/javascript">
+    $('.hexByte, .asciiByte, .field').hover(function () {
+        var i = $(this).data('i');
+        var section = $(this).data('section');
+        if (section) {
+            $('.section-' + section.id).toggleClass('hoverSection', true);
+        } else {
+            $('.byte-' + i).toggleClass('hover', true);
+        }
+    }, function () {
+        var i = $(this).data('i');
+        var section = $(this).data('section');
+        if (section) {
+            $('.section-' + section.id).toggleClass('hoverSection', false);
+        } else {
+            $('.byte-' + i).toggleClass('hover', false);
+        }
+    });
+    {{.sections}}
+    for (let i = 0; i < sections.length; i++) {
+        let section = sections[i];
+        section.title = section.id;
+        if (section.type) {
+            section.title += ` (${section.type})`;
+        }
+        if (section.confirmed) {
+            section.title += ' [Confirmed]';
+        }
+        for (let byte = 0; byte < section.length; byte++) {
+            $bytes = $('.byte-' + (section.start + byte));
+            //if (section.confirmed) {
+            //    $bytes.addClass('confirmed');
+            //}
+            $bytes.addClass('section').addClass('section-' + section.id).data('section', section);
+            if (section.checksum) {
+                $bytes.addClass('checksum');
+            }
+            $bytes.attr('title', section.title);
+            $bytes.map(function (byte) {
+                let el = $bytes[byte],
+                    $el = $(el),
+                    title = $el.attr('title');
+                title = '0x' + (1 * $el.data('i')).toString(16) + ': ' + title;
+                $($bytes[byte]).attr('title', title);
+                var tooltip = new bootstrap.Tooltip($bytes[byte]);
+            });
+        }
+    }
+</script>
