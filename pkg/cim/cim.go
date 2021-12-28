@@ -87,16 +87,16 @@ type Bin struct {
 	ConfigurationVersion   uint32        `bin:"len:4"`
 	PnBase1                uint32        `bin:"len:4"` // Base model (HW+boot)
 	PnBase1Suffix          string        `bin:"len:2"`
-	Vin                    Vin           `bin:"len:30"`         //30 bytes
+	Vin                    Vin           `bin:"len:30"`
 	ProgrammingID          []string      `bin:"len:3,[len:10]"` // 3 last sps progrmming ids's groups of 10 characters each. 30 bytes
 	UnknownData3           UnknownData3  `bin:"len:88"`
-	Pin                    Pin           `bin:"len:20"` // 20 bytes
+	Pin                    Pin           `bin:"len:20"`
 	UnknownData4           UnknownData4  `bin:"len:4"`
 	UnknownData1           UnknownData1  `bin:"len:44"`
-	Const1                 Const1        `bin:"len:10"` // 10 bytes
-	Keys                   Keys          `bin:"len:74"` // 74 bytes
+	Const1                 Const1        `bin:"len:10"`
+	Keys                   Keys          `bin:"len:74"`
 	UnknownData5           UnknownData5  `bin:"len:25"`
-	Sync                   Sync          `bin:"len:22"` // 22 bytes
+	Sync                   Sync          `bin:"len:22"`
 	UnknownData6           UnknownData6  `bin:"len:44"`
 	UnknownData7           UnknownData7  `bin:"len:14"`
 	UnknownData8           UnknownData8  `bin:"len:8"`
@@ -109,9 +109,9 @@ type Bin struct {
 	UnknownBytes3          []byte        `bin:"len:2"`
 	PartNo                 uint32        `bin:"le,len:4"` // Little endian, SAAB part number (factory?)
 	UnknownData14          []byte        `bin:"len:3"`
-	PSK                    PSK           `bin:"len:14"` // 14 byte
+	PSK                    PSK           `bin:"len:14"`
 	UnknownData10          UnknownData10 `bin:"len:12"`
-	EOF                    byte          `bin:"len:1"` //0x00
+	EOF                    byte          `bin:"len:1"`
 }
 
 func (bin *Bin) programmingDate() []byte {

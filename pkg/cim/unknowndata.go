@@ -14,13 +14,20 @@ type UnknownData1 struct {
 	Checksum2 uint16 `bin:"le,len:2"`
 }
 
+const (
+	errChecksum = "checksum does not match calculated checksum"
+)
+
 func (u *UnknownData1) validate() error {
+	if !bytes.Equal(u.Data1, u.Data2) {
+		return fmt.Errorf("UnknownData1 data1 & data2 does not match, corrupt memory?")
+	}
 	c1, c2 := u.Crc16()
 	if u.Checksum1 != c1 {
-		return fmt.Errorf("UnknownData1 data1 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData1 data1 " + errChecksum)
 	}
 	if u.Checksum2 != c2 {
-		return fmt.Errorf("UnknownData1 data2 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData1 data2 " + errChecksum)
 	}
 	return nil
 }
@@ -37,12 +44,15 @@ type UnknownData2 struct {
 }
 
 func (u *UnknownData2) validate() error {
+	if !bytes.Equal(u.Data1, u.Data2) {
+		return fmt.Errorf("UnknownData2 data1 & data2 does not match, corrupt memory?")
+	}
 	c1, c2 := u.Crc16()
 	if u.Checksum1 != c1 {
-		return fmt.Errorf("UnknownData2 data1 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData2 data1 " + errChecksum)
 	}
 	if u.Checksum2 != c2 {
-		return fmt.Errorf("UnknownData2 data2 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData2 data2 " + errChecksum)
 	}
 	return nil
 }
@@ -59,12 +69,15 @@ type UnknownData3 struct {
 }
 
 func (u *UnknownData3) validate() error {
+	if !bytes.Equal(u.Data1, u.Data2) {
+		return fmt.Errorf("UnknownData3 data1 & data2 does not match, corrupt memory?")
+	}
 	c1, c2 := u.Crc16()
 	if u.Checksum1 != c1 {
-		return fmt.Errorf("UnknownData3 data1 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData3 data1 " + errChecksum)
 	}
 	if u.Checksum2 != c2 {
-		return fmt.Errorf("UnknownData3 data2 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData3 data2 " + errChecksum)
 	}
 	return nil
 }
@@ -80,7 +93,7 @@ type UnknownData4 struct {
 
 func (u *UnknownData4) validate() error {
 	if u.Checksum != u.Crc16() {
-		return fmt.Errorf("UnknownData4 data checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData4 data " + errChecksum)
 	}
 	return nil
 }
@@ -96,7 +109,7 @@ type UnknownData5 struct {
 
 func (u *UnknownData5) validate() error {
 	if u.Checksum != u.Crc16() {
-		return fmt.Errorf("UnknownData5 data checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData5 data " + errChecksum)
 	}
 	return nil
 }
@@ -114,11 +127,14 @@ type UnknownData6 struct {
 
 func (u *UnknownData6) validate() error {
 	c1, c2 := u.Crc16()
+	if !bytes.Equal(u.Data1, u.Data2) {
+		return fmt.Errorf("UnknownData6 data1 & data2 does not match, corrupt memory?")
+	}
 	if u.Checksum1 != c1 {
-		return fmt.Errorf("UnknownData6 data1 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData6 data1 " + errChecksum)
 	}
 	if u.Checksum2 != c2 {
-		return fmt.Errorf("UnknownData6 data2 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData6 data2 " + errChecksum)
 	}
 	return nil
 }
@@ -136,11 +152,14 @@ type UnknownData7 struct {
 
 func (u *UnknownData7) validate() error {
 	c1, c2 := u.Crc16()
+	if !bytes.Equal(u.Data1, u.Data2) {
+		return fmt.Errorf("UnknownData7 data1 & data2 does not match, corrupt memory?")
+	}
 	if u.Checksum1 != c1 {
-		return fmt.Errorf("UnknownData7 data1 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData7 data1 " + errChecksum)
 	}
 	if u.Checksum2 != c2 {
-		return fmt.Errorf("UnknownData7 data2 checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData7 data2 " + errChecksum)
 	}
 	return nil
 }
@@ -156,7 +175,7 @@ type UnknownData8 struct {
 
 func (u *UnknownData8) validate() error {
 	if u.Checksum != u.Crc16() {
-		return fmt.Errorf("UnknownData5 data checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData5 data " + errChecksum)
 	}
 	return nil
 }
@@ -172,7 +191,7 @@ type UnknownData9 struct {
 
 func (u *UnknownData9) validate() error {
 	if u.Checksum != u.Crc16() {
-		return fmt.Errorf("UnknownData5 data checksum does not match calculated checksum")
+		return fmt.Errorf("UnknownData5 data " + errChecksum)
 	}
 	return nil
 }
@@ -193,12 +212,16 @@ func (u *UnknownData10) validate() error {
 		return nil
 	}
 
+	if !bytes.Equal(u.Data1, u.Data2) {
+		return fmt.Errorf("UnknownData10 data1 & data2 does not match, corrupt memory?")
+	}
+
 	c1, c2 := u.Crc16()
 	if u.Checksum1 != c1 {
-		return fmt.Errorf("UnknownData10 data1 checksum does not match calculated checksum %X, %X, %X", u.Data1, u.Checksum1, c1)
+		return fmt.Errorf("UnknownData10 data1 "+errChecksum+" %X, %X, %X", u.Data1, u.Checksum1, c1)
 	}
 	if u.Checksum2 != c2 {
-		return fmt.Errorf("UnknownData10 data2 checksum does not match calculated checksum %X, %X, %X", u.Data1, u.Checksum2, c2)
+		return fmt.Errorf("UnknownData10 data2 "+errChecksum+" %X, %X, %X", u.Data1, u.Checksum2, c2)
 	}
 	return nil
 }
