@@ -30,48 +30,48 @@
         <div class="row">
             <div class="col">
                 <form action="" id="options">
-                        <b>Vin:</b> <input class="field byte-28" data-i="28" type="text" maxlength="17" size="17" id="vin_opt" name="vin_opt" value="{{.fw.Vin.Data}}">&nbsp;<b>Model Year:</b> {{.fw.ModelYear}}<br>
-                        <b>Pin:</b> <input class="field byte-175" data-i="175" type="text" maxlength="8" size="8" id="pin_opt" name="pin_opt" value="{{printHex .fw.Pin.Data1}}"><br><br>
-                        <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4" data-i="4" type="checkbox" id="sas_opt" name="sas_opt" {{boolChecked .fw.SasOpt}}><br>
+                        <b>Vin:</b> <input class="field byte-28" data-i="28" type="text" maxlength="17" size="17" id="vin" name="vin" value="{{.fw.Vin.Data}}">&nbsp;<b>Model Year:</b> {{.fw.ModelYear}}<br>
+                        <b>Pin:</b> <input class="field byte-175" data-i="175" type="text" maxlength="8" size="8" id="pin" name="pin" value="{{printHex .fw.Pin.Data1}}"><br><br>
+                        <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4" data-i="4" type="checkbox" id="sas" name="sas" {{boolChecked .fw.SasOpt}}><br>
                         
-                        <b>Programmed keys:</b> <input class="field byte-279" data-i="279" style="width: 35px;" min="0" max="5"  id="keycount_opt" name="keycount_opt" type="number" value="{{.fw.Keys.Count1}}"><br><br>
+                        <b>Programmed keys:</b> <input class="field byte-279" data-i="279" style="width: 35px;" min="0" max="5"  id="keycount" name="keycount" type="number" value="{{.fw.Keys.Count1}}"><br><br>
                         {{range $key, $val := .fw.Keys.Data1}}
-                            <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text" data-i="{{keyOffset $key}}" id="key{{$key}}_opt" name="key_opt[{{$key}}]" maxlength="8" size="8" value="{{printHex $val}}"><br>
+                            <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text" data-i="{{keyOffset $key}}" id="key{{$key}}" name="key[{{$key}}]" maxlength="8" size="8" value="{{printHex $val}}"><br>
                         {{end}}<br>         
             </div>
             <div class="col">
                         <b>Remotes:</b><br>
-                        <b>ISK High:</b> <input class="field byte-253" data-i="253" type="text" maxlength="8" size="8" id="isk_hi_opt" name="isk_hi_opt" value="{{printHex .fw.Keys.IskHI1}}"><br>
-                        <b>ISK Low:</b>&nbsp; <input class="field byte-257" data-i="257" type="text" maxlength="4" size="4" id="isk_lo_opt" name="isk_lo_opt" value="{{printHex .fw.Keys.IskLO1}}"><br>
+                        <b>ISK High:</b> <input class="field byte-253" data-i="253" type="text" maxlength="8" size="8" id="isk_hi" name="isk_hi" value="{{printHex .fw.Keys.IskHI1}}"><br>
+                        <b>ISK Low:</b>&nbsp; <input class="field byte-257" data-i="257" type="text" maxlength="4" size="4" id="isk_lo" name="isk_lo" value="{{printHex .fw.Keys.IskLO1}}"><br>
                         <b>PCF:</b> <i>6732F2C5</i><br>
                         <b>Sync:</b><br>
                         {{range $key, $val := .fw.Sync.Data}}
-                            <input class="field byte-352" type="text" data-i="352" maxlength="8" size="8" id="sync{{$key}}_opt" name="sync_opt[{{$key}}]" value="{{printHex $val}}">
+                            <input class="field byte-352" type="text" data-i="352" maxlength="8" size="8" id="sync{{$key}}" name="sync[{{$key}}]" value="{{printHex $val}}">
                         {{end}}<br>
                         <br>
                         <b>SPS Counter:</b> <input class="field byte-54" data-i="54" min="0" style="width: 40px;" type="number" value="{{.fw.Vin.SpsCount}}"><br>
                         <b>Programming IDs:</b><br>
                         <ol>
                         {{range $key, $val := .fw.ProgrammingID}}
-                            <li><input class="field byte-57" data-i="57" id="prog_id_{{$key}}_opt" name="prog_id_opt[{{$key}}]"  maxlength="10" size="10" type="text" value="{{$val}}"></li>
+                            <li><input class="field byte-57" data-i="57" id="prog_id_{{$key}}" name="prog_id[{{$key}}]"  maxlength="10" size="10" type="text" value="{{$val}}"></li>
                         {{end}}
                         </ol>  
             </div>
             <div class="col">
                         <b>Part numbers:</b><br>
                         <ul>
-                        <li>Serial sticker:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-461" type="text" data-i="461" maxlength="10" size="11" id="snsticker_opt" name="snsticker_opt" value="{{.fw.SnSticker}}"></li>
-                        <li>End model (HW+SW):&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-11" type="text" data-i="11" maxlength="8" size="8" id="partno1_opt" name="partno1_opt" value="{{.fw.PartNo1}}"><input class="field byte-15" type="text" data-i="15" maxlength="2" size="2" value="{{.fw.PartNo1Rev}}"></li>
-	                    <li>Base model (HW+boot):&nbsp; <input class="field byte-21" type="text" data-i="21" maxlength="8" size="8" id="pnbase1_opt" name="pnbase1_opt" value="{{.fw.PnBase1}}"><input class="field byte-25" type="text" data-i="25" maxlength="2" size="2" value="{{.fw.PnBase1Rev}}"></li>
-	                    <li>Delphi part number:&nbsp;&nbsp;&nbsp; <input class="field byte-472" data-i="472" type="text" maxlength="8" size="8" id="pndelphi_opt" name="pndelphi_opt" value="{{.fw.DelphiPN}}"></li>
-	                    <li>SAAB part number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-478" data-i="478" maxlength="8" size="8" type="text" id="partno_opt" name="partno_opt" value="{{.fw.PartNo}}"></li>
-	                    <li>Configuration Version: <input class="field byte-17" type="text" data-i="17" maxlength="8" size="8" id="conf_ver_opt" name="conf_ver_opt" value="{{.fw.ConfigurationVersion}}"></li>
+                        <li>Serial sticker:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-461" type="text" data-i="461" maxlength="10" size="11" id="snsticker" name="snsticker" value="{{.fw.SnSticker}}"></li>
+                        <li>End model (HW+SW):&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-11" type="text" data-i="11" maxlength="8" size="8" id="partno1" name="partno1" value="{{.fw.PartNo1}}"><input class="field byte-15" type="text" data-i="15" maxlength="2" size="2" value="{{.fw.PartNo1Rev}}"></li>
+	                    <li>Base model (HW+boot):&nbsp; <input class="field byte-21" type="text" data-i="21" maxlength="8" size="8" id="pnbase1" name="pnbase1" value="{{.fw.PnBase1}}"><input class="field byte-25" type="text" data-i="25" maxlength="2" size="2" value="{{.fw.PnBase1Rev}}"></li>
+	                    <li>Delphi part number:&nbsp;&nbsp;&nbsp; <input class="field byte-472" data-i="472" type="text" maxlength="8" size="8" id="pndelphi" name="pndelphi" value="{{.fw.DelphiPN}}"></li>
+	                    <li>SAAB part number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-478" data-i="478" maxlength="8" size="8" type="text" id="partno" name="partno" value="{{.fw.PartNo}}"></li>
+	                    <li>Configuration Version: <input class="field byte-17" type="text" data-i="17" maxlength="8" size="8" id="conf_ver" name="conf_ver" value="{{.fw.ConfigurationVersion}}"></li>
                         </ul>
-                        <b>Factory programming date:</b> <input class="field byte-466" type="date" data-i="466" maxlength="10" size="10" id="fp_date_opt" name="fp_date_opt" value="{{isoDate .fw.ProgrammingFactoryDate}}"><br>
+                        <b>Factory programming date:</b> <input class="field byte-466" type="date" data-i="466" maxlength="10" size="10" id="fp_date" name="fp_date" value="{{isoDate .fw.ProgrammingFactoryDate}}"><br>
                         <br>
                         <b>Programming history:</b><br>
                         <ul>
-                        <li><b>Last programming date:</b> <input class="field byte-2" data-i="2" type="date"  id="programming_date_opt" name="programming_date_opt" value="{{isoDate .fw.ProgrammingDate}}"></li>
+                        <li><b>Last programming date:</b> <input class="field byte-2" data-i="2" type="date"  id="programming_date" name="programming_date" value="{{isoDate .fw.ProgrammingDate}}"></li>
                         {{if eq .fw.Vin.SpsCount 0}}
                             <li><b>Factory programming only</b></li>
                         {{end}}

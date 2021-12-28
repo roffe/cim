@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -28,23 +29,23 @@ func faviconHandler(c *gin.Context) {
 }
 
 type updateRequest struct {
-	VinOpt             string   `json:"vin_opt"`
-	PinOpt             string   `json:"pin_opt"`
-	SasOpt             string   `json:"sas_opt"`
-	KeyCountOpt        string   `json:"keycount_opt"`
-	KeyOpt             []string `json:"key_opt"`
-	IskHiOpt           string   `json:"isk_hi_opt"`
-	IskLoOpt           string   `json:"isk_lo_opt"`
-	SyncOpt            []string `json:"sync_opt"`
-	ProgIDOpt          string   `json:"prog_id_opt"`
-	SnstickerOpt       string   `json:"snsticker_opt"`
-	Partno1Opt         string   `json:"partno1_opt"`
-	Pnbase1Opt         string   `json:"pnbase1_opt"`
-	PndelphiOpt        string   `json:"pndelphi_opt"`
-	PartnoOpt          string   `json:"partno_opt"`
-	ConfVerOpt         string   `json:"conf_ver_opt"`
-	FpDateOpt          string   `json:"fp_date_opt"`
-	ProgrammingDateOpt string   `json:"programming_date_opt"`
+	VinOpt             string   `json:"vin"`
+	PinOpt             string   `json:"pin"`
+	SasOpt             string   `json:"sas"`
+	KeyCountOpt        string   `json:"keycount"`
+	KeyOpt             []string `json:"key"`
+	IskHiOpt           string   `json:"isk_hi"`
+	IskLoOpt           string   `json:"isk_lo"`
+	SyncOpt            []string `json:"sync"`
+	ProgIDOpt          []string `json:"prog_id"`
+	SnstickerOpt       string   `json:"snsticker"`
+	Partno1Opt         string   `json:"partno1"`
+	Pnbase1Opt         string   `json:"pnbase1"`
+	PndelphiOpt        string   `json:"pndelphi"`
+	PartnoOpt          string   `json:"partno"`
+	ConfVerOpt         string   `json:"conf_ver"`
+	FpDateOpt          string   `json:"fp_date"`
+	ProgrammingDateOpt string   `json:"programming_date"`
 	File               string   `json:"file"`
 	Filename           string   `json:"filename"`
 }
@@ -67,8 +68,15 @@ func updateHandler(c *gin.Context) {
 		return
 	}
 
-	fw.Vin.Set(u.VinOpt)
-	fw.Pin.Set(u.PinOpt)
+	if err := fw.Vin.Set(u.VinOpt); err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := fw.Pin.Set(u.PinOpt); err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
 
 	if u.SasOpt == "on" {
 		fw.SetSasOpt(true)
@@ -86,6 +94,14 @@ func updateHandler(c *gin.Context) {
 }
 
 func updateKeys(fw *cim.Bin, u updateRequest) error {
+
+	n, err := strconv.ParseUint(u.KeyCountOpt, 0, 8)
+	if err != nil {
+		return fmt.Errorf("failed to parse key count: %q %s", u.KeyCountOpt, err.Error())
+	}
+	n2 := uint8(n)
+	fw.Keys.Count1, fw.Keys.Count2 = n2, n2
+
 	for i, k := range u.KeyOpt {
 		b, err := hex.DecodeString(k)
 		if err != nil {
