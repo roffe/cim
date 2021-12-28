@@ -4,6 +4,7 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -26,12 +27,75 @@ func faviconHandler(c *gin.Context) {
 	c.Status(200)
 }
 
+type updateRequest struct {
+	VinOpt             string   `json:"vin_opt"`
+	PinOpt             string   `json:"pin_opt"`
+	SasOpt             string   `json:"sas_opt"`
+	KeyCountOpt        string   `json:"keycount_opt"`
+	KeyOpt             []string `json:"key_opt"`
+	IskHiOpt           string   `json:"isk_hi_opt"`
+	IskLoOpt           string   `json:"isk_lo_opt"`
+	SyncOpt            []string `json:"sync_opt"`
+	ProgIDOpt          string   `json:"prog_id_opt"`
+	SnstickerOpt       string   `json:"snsticker_opt"`
+	Partno1Opt         string   `json:"partno1_opt"`
+	Pnbase1Opt         string   `json:"pnbase1_opt"`
+	PndelphiOpt        string   `json:"pndelphi_opt"`
+	PartnoOpt          string   `json:"partno_opt"`
+	ConfVerOpt         string   `json:"conf_ver_opt"`
+	FpDateOpt          string   `json:"fp_date_opt"`
+	ProgrammingDateOpt string   `json:"programming_date_opt"`
+	File               string   `json:"file"`
+	Filename           string   `json:"filename"`
+}
+
 func updateHandler(c *gin.Context) {
-	if err := c.Request.ParseForm(); err != nil {
+	var u updateRequest
+	if err := c.ShouldBindJSON(&u); err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	b, err := base64.StdEncoding.DecodeString(u.File)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	fw, err := cim.MustLoadBytes(u.Filename, b)
+	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	fmt.Println(c.Request.PostForm)
+
+	fw.Vin.Set(u.VinOpt)
+	fw.Pin.Set(u.PinOpt)
+
+	if u.SasOpt == "on" {
+		fw.SetSasOpt(true)
+	} else {
+		fw.SetSasOpt(false)
+	}
+
+	if err := updateKeys(fw, u); err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("invalid key value: %v", err))
+		return
+	}
+
+	fw.Dump()
+	c.String(200, "ok, not implemented yet")
+}
+
+func updateKeys(fw *cim.Bin, u updateRequest) error {
+	for i, k := range u.KeyOpt {
+		b, err := hex.DecodeString(k)
+		if err != nil {
+			return err
+		}
+		if err := fw.Keys.SetKey(uint8(i), b); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Handle file uploads

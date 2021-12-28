@@ -1,4 +1,65 @@
 <script type="application/javascript">
+
+$.fn.serializeControls = function() {
+  var data = {};
+
+  function buildInputObject(arr, val) {
+    if (arr.length < 1)
+      return val;  
+    var objkey = arr[0];
+    if (objkey.slice(-1) == "]") {
+      objkey = objkey.slice(0,-1);
+    }  
+    var result = [];
+    if (arr.length == 1){
+      result[objkey] = val;
+    } else {
+      arr.shift();
+      var nestedVal = buildInputObject(arr,val);
+      result[objkey] = nestedVal;
+    }
+    return result;
+  }
+
+  $.each(this.serializeArray(), function(index) {
+    var val = this.value;
+    var c = this.name.split("[");
+    var a = buildInputObject(c, val);
+    $.extend(true, data, a);
+  });
+  
+  return data;
+}
+
+function getFormData($form){
+    var unindexed_array = $form.serializeArray();
+    var indexed_array = {};
+
+    $.map(unindexed_array, function(n, i){
+    console.log(n);
+    console.log(i);
+        indexed_array[n['name']] = n['value'];
+    });
+
+    return indexed_array;
+}
+
+
+$("#options").on("submit", function (e) {
+  e.preventDefault();
+  var $form = $(e.target);
+  let dd = JSON.stringify($form.serializeControls(), null, 2)
+  console.log(dd)
+    $.ajax("/update", {
+    data : dd,
+    contentType : 'application/json',
+    type : 'POST'
+    });
+});
+    
+    
+    
+    
     $('.hexByte, .asciiByte, .field').hover(function () {
         var i = $(this).data('i');
         var section = $(this).data('section');

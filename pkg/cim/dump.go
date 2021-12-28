@@ -13,7 +13,7 @@ func (fw *Bin) Dump() {
 	fmt.Println("")
 
 	fmt.Println("VIN:", fw.Vin.Data)
-	fmt.Printf("PIN: %q / %q\n", fw.Pin.Data1, fw.Pin.Data2)
+	fmt.Printf("PIN: %X / %X\n", fw.Pin.Data1, fw.Pin.Data2)
 	fmt.Println("")
 
 	fmt.Printf("Model Year: %02s\n", fw.Vin.Data[9:10])

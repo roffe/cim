@@ -169,6 +169,14 @@ func (bin *Bin) SasOpt() bool {
 	return bin.SasOption == 0x03
 }
 
+func (bin *Bin) SetSasOpt(opt bool) {
+	if opt {
+		bin.SasOption = 0x03
+	} else {
+		bin.SasOption = 0x06
+	}
+}
+
 func (*Bin) BCDDate(r binstruct.Reader) (time.Time, error) {
 	return bcdDate("06-01-02", r)
 }

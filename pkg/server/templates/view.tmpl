@@ -11,18 +11,16 @@
         crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {{template "style.tmpl" .}}
-
 </head>
 
 <body>
     <div class="container content">
         <div class="row">
             <div class="col">
-            <h2>CIM Dump Editor</h2>
-                <h6>{{.filename}}&nbsp;<a href="/"><button>Back</button></a></h6>
+            <h2>CIM Dump Editor <a href="/"><button>Back</button></a></h2>
+                <h6><b>Filename:</b> {{.filename}}&nbsp;</h6>
             </div>
         </div>
-        <hr>
         <div class="row">
             <div class="col">
         <b>MD5:</b> {{.fw.MD5}} <b>CRC32:</b> {{.fw.CRC32}}
@@ -31,14 +29,14 @@
         <hr>
         <div class="row">
             <div class="col">
-                <form method="post" action="/update" enctype="multipart/form-data">
+                <form action="" id="options">
                         <b>Vin:</b> <input class="field byte-28" data-i="28" type="text" maxlength="17" size="17" id="vin_opt" name="vin_opt" value="{{.fw.Vin.Data}}">&nbsp;<b>Model Year:</b> {{.fw.ModelYear}}<br>
                         <b>Pin:</b> <input class="field byte-175" data-i="175" type="text" maxlength="8" size="8" id="pin_opt" name="pin_opt" value="{{printHex .fw.Pin.Data1}}"><br><br>
                         <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4" data-i="4" type="checkbox" id="sas_opt" name="sas_opt" {{boolChecked .fw.SasOpt}}><br>
                         
-                        <b>Programmed keys:</b> <input class="field byte-279" data-i="279" style="width: 35px;" min="0" max="5" type="number" value="{{.fw.Keys.Count1}}"><br><br>
+                        <b>Programmed keys:</b> <input class="field byte-279" data-i="279" style="width: 35px;" min="0" max="5"  id="keycount_opt" name="keycount_opt" type="number" value="{{.fw.Keys.Count1}}"><br><br>
                         {{range $key, $val := .fw.Keys.Data1}}
-                            <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text" data-i="{{keyOffset $key}}" id="key{{$key}}_opt" name="key{{$key}}_opt" maxlength="8" size="8" value="{{printHex $val}}"><br>
+                            <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text" data-i="{{keyOffset $key}}" id="key{{$key}}_opt" name="key_opt[{{$key}}]" maxlength="8" size="8" value="{{printHex $val}}"><br>
                         {{end}}<br>         
             </div>
             <div class="col">
@@ -48,14 +46,14 @@
                         <b>PCF:</b> <i>6732F2C5</i><br>
                         <b>Sync:</b><br>
                         {{range $key, $val := .fw.Sync.Data}}
-                            <input class="field byte-352" type="text" data-i="352" maxlength="8" size="8" id="sync{{$key}}_opt" name="sync{{$key}}_opt" value="{{printHex $val}}">
+                            <input class="field byte-352" type="text" data-i="352" maxlength="8" size="8" id="sync{{$key}}_opt" name="sync_opt[{{$key}}]" value="{{printHex $val}}">
                         {{end}}<br>
                         <br>
                         <b>SPS Counter:</b> <input class="field byte-54" data-i="54" min="0" style="width: 40px;" type="number" value="{{.fw.Vin.SpsCount}}"><br>
                         <b>Programming IDs:</b><br>
                         <ol>
                         {{range $key, $val := .fw.ProgrammingID}}
-                            <li><input class="field byte-57" data-i="57" id="prog_id_{{$key}}_opt" name="prog_id_{{$key}}_opt"  maxlength="10" size="10" type="text" value="{{$val}}"></li>
+                            <li><input class="field byte-57" data-i="57" id="prog_id_{{$key}}_opt" name="prog_id_opt[{{$key}}]"  maxlength="10" size="10" type="text" value="{{$val}}"></li>
                         {{end}}
                         </ol>  
             </div>
@@ -83,31 +81,36 @@
         </div>
         <div class="row">
             <div class="col">
+            <input type="hidden" name="file" id="file" value="{{.B64}}">
+            <input type="hidden" name="filename" id="filename" value="{{.filename}}">
             <input type="submit" value="Update" name="submit">
             </div>
             <div class="col">
-                </form>   
             </div>
             <div class="col">
+                <div class="result" id="result" name="result">
+            </div>
+            </form>   
         </div>
-        </div>
-<hr>
         <div class="row">
             <div class="col">
+                <hr>
                 <div class="dump_contents">
                     {{.Hexview}}
-    <hr>
-                    <br>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                    <hr>
                     <form action="/save" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="filename" id="filename" value="{{.filename}}">
                         <input type="hidden" name="file" id="file" value="{{.B64}}">
                         <input type="submit" value="Save" name="submit">
                     </form>
-                </div>
             </div>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
