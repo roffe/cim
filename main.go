@@ -1,36 +1,60 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/roffe/cim/pkg/cim"
 	"github.com/roffe/cim/pkg/server"
+	flag "github.com/spf13/pflag"
+)
+
+var (
+	outputMode = "pretty"
+	debugMode  = false
 )
 
 func init() {
 	gin.SetMode(gin.ReleaseMode)
+
+	flag.StringVarP(&outputMode, "output", "o", outputMode, "pretty|json|string")
+	flag.BoolVarP(&debugMode, "debug", "d", debugMode, "true|false")
+	flag.Parse()
+
+	if debugMode {
+		cim.Debug = true
+		gin.SetMode(gin.DebugMode)
+	}
+
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
 func main() {
+
 	// if we pass a filename, print to the console instead of starting ui
-	if len(os.Args) == 2 {
+	if len(os.Args) >= 2 {
 		filename := os.Args[1]
 		fw, err := cim.MustLoad(filename)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fw.Pretty()
-
-		b, err := json.MarshalIndent(fw, "", "  ")
-		if err != nil {
-			log.Fatal(err)
+		switch strings.ToLower(outputMode) {
+		case "string":
+			fw.Dump()
+		case "json":
+			b, err := fw.Json()
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(string(b[:]))
+		case "pretty":
+			fw.Pretty()
+		default:
+			fw.Pretty()
 		}
-		fmt.Println(string(b[:]))
 		return
 	}
 
