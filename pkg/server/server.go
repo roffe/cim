@@ -41,12 +41,13 @@ var templateHelpers = template.FuncMap{
 //go:embed templates/*.tmpl
 var tp embed.FS
 
+//go:embed favicon.ico
+var favicon []byte
+
 func Run() error {
 	r := gin.Default()
 	// Load templates
-	//r.LoadHTMLGlob("templates/*.tmpl")
-	//if tmpl, err := template.New("projectViews").Funcs(templateHelpers).ParseGlob("templates/*.tmpl"); err == nil {
-	if tmpl, err := template.New("").Funcs(templateHelpers).ParseFS(tp, "templates/*.tmpl"); err == nil {
+	if tmpl, err := template.New("views").Funcs(templateHelpers).ParseFS(tp, "templates/*.tmpl"); err == nil {
 		r.SetHTMLTemplate(tmpl)
 	} else {
 		return err
@@ -59,8 +60,24 @@ func Run() error {
 	r.POST("/save", saveHandler)
 	r.POST("/", uploadHandler)
 	r.POST("/update", updateHandler)
+	r.GET("/favicon.ico", func(c *gin.Context) {
+		if _, err := c.Writer.Write(favicon); err != nil {
+			c.String(http.StatusInternalServerError, "failed to load favicon.ico")
+			return
+		}
+		c.Status(200)
+	})
 
 	return r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+}
+
+func updateHandler(c *gin.Context) {
+	if err := c.Request.ParseForm(); err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+	fmt.Println(c.Request.PostForm)
+
 }
 
 // Handle file uploads
@@ -146,7 +163,7 @@ func uploadHandler(c *gin.Context) {
 	}
 	out.WriteString(`]`)
 
-	c.HTML(http.StatusOK, "hex.tmpl", gin.H{
+	c.HTML(http.StatusOK, "view.tmpl", gin.H{
 		"filename": filepath.Base(filename),
 		"fw":       fw,
 		"B64":      base64.StdEncoding.EncodeToString(fwBytes),
@@ -154,10 +171,6 @@ func uploadHandler(c *gin.Context) {
 		"sections": template.JS(out.String()),
 		"styles":   template.CSS(styles),
 	})
-}
-
-func updateHandler(c *gin.Context) {
-
 }
 
 func saveHandler(c *gin.Context) {
@@ -175,15 +188,9 @@ func saveHandler(c *gin.Context) {
 		return
 	}
 
-	fw, err := cim.LoadBytes(filename, b)
+	fw, err := cim.MustLoadBytes(filename, b)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	if err := fw.Validate(); err != nil {
-		c.Error(err)
-		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 

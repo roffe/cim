@@ -42,6 +42,17 @@ func Load(filename string) (*Bin, error) {
 	return &fw, nil
 }
 
+func MustLoad(filename string) (*Bin, error) {
+	fw, err := Load(filename)
+	if err != nil {
+		return nil, err
+	}
+	if err := fw.Validate(); err != nil {
+		return nil, err
+	}
+	return fw, nil
+}
+
 // Load a byte slice as a named binary
 func LoadBytes(filename string, b []byte) (*Bin, error) {
 	fw := Bin{
@@ -56,11 +67,24 @@ func LoadBytes(filename string, b []byte) (*Bin, error) {
 			b[i] = bb ^ 0xFF
 		}
 	}
+
 	// Unpack bytes into struct
 	if err := binstruct.UnmarshalBE(b, &fw); err != nil {
 		return nil, err
 	}
 	return &fw, nil
+}
+
+// Load byte array and validate it directly
+func MustLoadBytes(filename string, b []byte) (*Bin, error) {
+	fw, err := LoadBytes(filename, b)
+	if err != nil {
+		return nil, err
+	}
+	if err := fw.Validate(); err != nil {
+		return nil, err
+	}
+	return fw, nil
 }
 
 type Bin struct {

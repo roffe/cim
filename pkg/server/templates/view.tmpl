@@ -3,6 +3,7 @@
 
 <head>
     <title>CIM Dump Editor</title>
+    <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
@@ -26,14 +27,14 @@
         <hr>
         <div class="row">
             <div class="col">
-                <form method="post" ction="/update">
+                <form method="post" action="/update" enctype="multipart/form-data">
                         <b>Vin:</b> <input class="field byte-28" data-i="28" type="text" maxlength="17" size="17" id="vin_opt" name="vin_opt" value="{{.fw.Vin.Data}}">&nbsp;<b>Model Year:</b> {{.fw.ModelYear}}<br><br>
                         <b>Pin:</b> <input class="field byte-175" data-i="175" type="text" maxlength="8" size="8" id="pin_opt" name="pin_opt" value="{{printHex .fw.Pin.Data1}}"><br><br>
                         <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4" data-i="4" type="checkbox" id="sas_opt" name="sas_opt" {{boolChecked .fw.SasOpt}}><br>
                         <hr>
                         <b>Programmed keys:</b> <input class="field byte-279" data-i="279" style="width: 35px;" min="0" max="5" type="number" value="{{.fw.Keys.Count1}}"><br><br>
                         {{range $key, $val := .fw.Keys.Data1}}
-                        <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text" data-i="{{keyOffset $key}}" id="key{{$key}}_opt" name="key{{$key}}_opt" maxlength="8" size="8" value="{{printHex $val}}"><br>
+                            <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text" data-i="{{keyOffset $key}}" id="key{{$key}}_opt" name="key{{$key}}_opt" maxlength="8" size="8" value="{{printHex $val}}"><br>
                         {{end}}
                         <hr>
                         <b>Programming history:</b><br>
@@ -59,7 +60,7 @@
                         <hr>
                         <b>Sync:</b><br>
                         {{range $key, $val := .fw.Sync.Data}}
-                        <input class="field byte-352" type="text" data-i="352" maxlength="8" size="8" id="sync{{$key}}_opt" name="sync{{$key}}_opt" value="{{printHex $val}}">
+                            <input class="field byte-352" type="text" data-i="352" maxlength="8" size="8" id="sync{{$key}}_opt" name="sync{{$key}}_opt" value="{{printHex $val}}">
                         {{end}}<br>
                         <br>
                         <hr>
@@ -74,12 +75,13 @@
 	                    <li>SAAB part number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-478" data-i="478" maxlength="8" size="8" type="text" id="partno_opt" name="partno_opt" value="{{.fw.PartNo}}"></li>
 	                    <li>Configuration Version: <input class="field byte-17" type="text" data-i="17" maxlength="8" size="8" id="conf_ver_opt" name="conf_ver_opt" value="{{.fw.ConfigurationVersion}}"></li>
                         </ul>
-                  </form>              
+                             
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <a href="#"><button>Update</button></a></button>
+                <input type="submit" value="Update" name="submit">
+                </form>   
             </div>
         </div>
         <hr>
@@ -96,6 +98,7 @@
             </div>
         </div>
     </div>
+    <hr>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 

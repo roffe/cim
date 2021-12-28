@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -16,23 +17,25 @@ func init() {
 }
 
 func main() {
-	// if we pass a filename, print to the console instead
+	// if we pass a filename, print to the console instead of starting ui
 	if len(os.Args) == 2 {
 		filename := os.Args[1]
-		fw, err := cim.Load(filename)
+		fw, err := cim.MustLoad(filename)
 		if err != nil {
 			log.Fatal(err)
 		}
+		fw.Pretty()
 
-		if err := fw.Validate(); err != nil {
+		b, err := json.MarshalIndent(fw, "", "  ")
+		if err != nil {
 			log.Fatal(err)
 		}
-		fw.Pretty()
+		fmt.Println(string(b[:]))
 		return
 	}
 
 	// Run web ui
-	fmt.Println("open http://localhost:8080")
+	fmt.Println("Server started @ http://localhost:8080")
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}
