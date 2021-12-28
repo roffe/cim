@@ -2,6 +2,7 @@ package cim
 
 import (
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"hash/crc32"
 	"io/ioutil"
@@ -12,7 +13,10 @@ import (
 	"github.com/jedib0t/go-pretty/table"
 )
 
-var tableTheme = table.StyleColoredDark
+var (
+	tableTheme = table.StyleColoredDark
+	Debug      = false
+)
 
 const IsoDate = "2006-01-02"
 
@@ -22,43 +26,13 @@ func Load(filename string) (*Bin, error) {
 	if err != nil {
 		return nil, err
 	}
-	fw := Bin{
-		filename: filename,
-		md5:      fmt.Sprintf("%x", md5.Sum(b)),
-		crc32:    fmt.Sprintf("%08x", crc32.Checksum(b, crc32.MakeTable(crc32.IEEE))),
-	}
-
-	//xor bytes if magicByte is not 0x20
-	if b[0] != 0x20 {
-		for i, bb := range b {
-			b[i] = bb ^ 0xFF
-		}
-	}
-
-	if err := binstruct.UnmarshalBE(b, &fw); err != nil {
-		return nil, err
-	}
-
-	return &fw, nil
-}
-
-func MustLoad(filename string) (*Bin, error) {
-	fw, err := Load(filename)
-	if err != nil {
-		return nil, err
-	}
-	if err := fw.Validate(); err != nil {
-		return nil, err
-	}
-	return fw, nil
+	return LoadBytes(filename, b)
 }
 
 // Load a byte slice as a named binary
 func LoadBytes(filename string, b []byte) (*Bin, error) {
 	fw := Bin{
 		filename: filename,
-		md5:      fmt.Sprintf("%x", md5.Sum(b)),
-		crc32:    fmt.Sprintf("%08x", crc32.Checksum(b, crc32.MakeTable(crc32.IEEE))),
 	}
 
 	//xor bytes if magicByte is not 0x20
@@ -75,6 +49,17 @@ func LoadBytes(filename string, b []byte) (*Bin, error) {
 	return &fw, nil
 }
 
+func MustLoad(filename string) (*Bin, error) {
+	fw, err := Load(filename)
+	if err != nil {
+		return nil, err
+	}
+	if err := fw.Validate(); err != nil {
+		return nil, err
+	}
+	return fw, nil
+}
+
 // Load byte array and validate it directly
 func MustLoadBytes(filename string, b []byte) (*Bin, error) {
 	fw, err := LoadBytes(filename, b)
@@ -87,10 +72,9 @@ func MustLoadBytes(filename string, b []byte) (*Bin, error) {
 	return fw, nil
 }
 
+// Cim eeprom binary layout
 type Bin struct {
 	filename               string        `bin:"-"`
-	md5                    string        `bin:"-"`
-	crc32                  string        `bin:"-"`
 	MagicByte              byte          `bin:"len:1"`         // 0x20
 	ProgrammingDate        time.Time     `bin:"BCDDate,len:3"` // BCD Binary-Coded Decimal yy-mm-dd
 	SasOption              uint8         `bin:"len:1"`         // Steering Angle Sensor 0x03 = true
@@ -127,6 +111,10 @@ type Bin struct {
 	EOF                    byte          `bin:"len:1"` //0x00
 }
 
+func (bin *Bin) Json() ([]byte, error) {
+	return json.MarshalIndent(bin, "", "  ")
+}
+
 // Validate all checksums and known tests to ensure a healthy bin
 func (bin *Bin) Validate() error {
 	tests := []func() error{
@@ -145,6 +133,7 @@ func (bin *Bin) Validate() error {
 		bin.UnknownData9.validate,
 		bin.UnknownData10.validate,
 		bin.PSK.validate,
+		bin.Sync.validate,
 	}
 
 	for _, v := range tests {
@@ -165,11 +154,7 @@ func (*Bin) BCDDate(r binstruct.Reader) (time.Time, error) {
 		return time.Time{}, err
 	}
 	t := fmt.Sprintf("%02X-%02X-%02X", b[0], b[1:2], b[2:3])
-	out, err := time.Parse("06-01-02", t) // yy-mm-dd
-	if err != nil {
-		return time.Time{}, err
-	}
-	return out, nil
+	return time.Parse("06-01-02", t) // yy-mm-dd
 }
 
 func (*Bin) BCDDateR(r binstruct.Reader) (time.Time, error) {
@@ -178,11 +163,8 @@ func (*Bin) BCDDateR(r binstruct.Reader) (time.Time, error) {
 		return time.Time{}, err
 	}
 	t := fmt.Sprintf("%02X-%02X-%02X", b[0], b[1:2], b[2:3])
-	out, err := time.Parse("02-01-06", t) // dd-mm-yy
-	if err != nil {
-		return time.Time{}, err
-	}
-	return out, nil
+	return time.Parse("02-01-06", t) // dd-mm-yy
+
 }
 
 // Return Serial sticker as uint64, stored as 5byte Binary-Coded Decimal (BCD)
@@ -199,11 +181,19 @@ func (bin *Bin) Filename() string {
 }
 
 func (bin *Bin) MD5() string {
-	return bin.md5
+	b, err := bin.Bytes()
+	if err != nil {
+		panic(err)
+	}
+	return fmt.Sprintf("%x", md5.Sum(b))
 }
 
 func (bin *Bin) CRC32() string {
-	return bin.crc32
+	b, err := bin.Bytes()
+	if err != nil {
+		panic(err)
+	}
+	return fmt.Sprintf("%08x", crc32.ChecksumIEEE(b))
 }
 
 // Return model year from VIN
