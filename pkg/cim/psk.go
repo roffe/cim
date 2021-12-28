@@ -16,7 +16,7 @@ type PSK struct {
 
 func (p *PSK) validate() error {
 	if p.Checksum != p.Crc16() {
-		return fmt.Errorf("data checksum does not match calculated checksum")
+		return fmt.Errorf("psk data checksum does not match calculated checksum")
 	}
 	return nil
 }
