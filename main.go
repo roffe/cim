@@ -28,7 +28,6 @@ func main() {
 			log.Fatal(err)
 		}
 		fw.Pretty()
-
 		return
 	}
 
