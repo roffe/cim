@@ -3,6 +3,8 @@ package server
 import (
 	"bytes"
 	"embed"
+	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"html/template"
 	"io"
@@ -11,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -81,6 +84,8 @@ func setupRouter(enableShutdown bool) (*gin.Engine, error) {
 	return r, nil
 }
 
+var bootOrder = []string{"83", "1B", "57", "AF", "C3", "C7", "F3", "FD", "147", "160", "176", "1A2", "1B0", "1B8", "1BF", "1E5", "83", "B9", "DD", "122", "18C", "1A8", "1C6"}
+
 // Load templates from embed fs and add helper funcs to them
 func loadTemplates(r *gin.Engine) error {
 	var templateHelpers = template.FuncMap{
@@ -101,6 +106,23 @@ func loadTemplates(r *gin.Engine) error {
 		},
 		"keyOffset": func(factor int) template.HTML {
 			return template.HTML(fmt.Sprintf("%d", 259+(4*factor)))
+		},
+		"bootOrder": func() template.HTML {
+			var out strings.Builder
+			for _, b := range bootOrder {
+				by, err := hex.DecodeString(fmt.Sprintf("%08s", b))
+				if err != nil {
+					log.Fatal(err)
+				}
+				u32 := binary.BigEndian.Uint32(by)
+				_, err = out.WriteString(
+					fmt.Sprintf(`<span class="field byte-%d">0x%s</span> `, u32, b),
+				)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			return template.HTML(out.String())
 		},
 	}
 

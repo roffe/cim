@@ -17,6 +17,7 @@
     <div class="container content">
         <div class="row">
             <div class="col">
+            <br>
             <h2>CIM Dump Editor <a href="/"><button>Back</button></a></h2>
                 <h6><b>Filename:</b> {{.filename}}&nbsp;</h6>
             </div>
@@ -98,6 +99,12 @@
                 <div class="dump_contents">
                     {{.Hexview}}
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+            <br>
+            <b>Boot read order</b> {{bootOrder}}
             </div>
         </div>
         <div class="row">
