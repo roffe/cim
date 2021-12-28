@@ -28,16 +28,16 @@ func (s *Section) String() string {
 func generateStyles(sections []Section) template.CSS {
 	var css strings.Builder
 	for _, s := range sections {
-		m := md5.Sum([]byte(s.ID))
-		col := fmt.Sprintf("%XFF", m[:3])
-		b, err := hex.DecodeString(col)
+		b, err := hex.DecodeString(
+			fmt.Sprintf("%x", md5.Sum([]byte(s.ID)[:3])),
+		)
 		if err != nil {
 			log.Fatal(err)
 		}
+		// bit-shift value by 2 for some nicer colors
 		for i, bb := range b {
-			b[i] = bb << 0x3
+			b[i] = bb << 0x2
 		}
-
 		css.WriteString(fmt.Sprintf("\t.section-%s {\n\t\tbackground: #%X;\n\t}\n", strings.ToUpper(s.ID), b))
 	}
 	return template.CSS(css.String())
@@ -84,7 +84,6 @@ func generateSections(fw *cim.Bin) []Section {
 					previous = 0
 					continue
 				}
-
 				if _, err := fmt.Sscanf(p, "len:%d", &length); err != nil {
 					continue
 				}
