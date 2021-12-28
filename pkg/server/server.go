@@ -88,25 +88,21 @@ func getFileFromCtx(c *gin.Context) ([]byte, string, int64, error) {
 // sanitize binary so we don't print controll characters
 func psafe(b byte) string {
 	a := uint8(b)
-	if a == 0x00 {
+	switch a {
+	case 0x00:
 		return "&centerdot;"
-	}
-	if a == 0x20 {
-		return "&nbsp"
-	}
-	if a == 0xFF {
+	case 0x20:
+		return "&nbsp;"
+	case 0xFF:
 		return "&fflig;"
+	case 0x3c, 0x3e:
+		return "˟"
 	}
 	if a <= 0x20 {
 		return "&#9618;"
 	}
-
 	if a >= 0x7F {
 		return "&block;"
-	}
-
-	if a == 0x3c || a == 0x3e {
-		return "˟"
 	}
 
 	return fmt.Sprintf("%s", []byte{b})
