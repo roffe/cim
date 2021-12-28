@@ -43,8 +43,7 @@ func (k *Keys) SetKey(keyno uint8, value []byte) error {
 	if len(value) != 4 {
 		return fmt.Errorf("invalid key size")
 	}
-	k.Data1[keyno] = value
-	k.Data2[keyno] = value
+	k.Data1[keyno], k.Data2[keyno] = value, value
 	k.updateKeysChecksum()
 	return nil
 }
@@ -56,13 +55,11 @@ func (k *Keys) SetIskHi(value []byte) {
 }
 
 func (k *Keys) SetIskLo(value []byte) {
-	k.IskLO1 = value
-	k.IskLO2 = value
+	k.IskLO1, k.IskLO2 = value, value
 	k.updateKeysChecksum()
 }
 
 func (k *Keys) validate() error {
-
 	if k.Checksum1 != k.Checksum2 {
 		return fmt.Errorf("key 0 checksums missmatch in bin")
 	}
@@ -118,7 +115,6 @@ func (k *Keys) Checksum() (uint16, uint16) {
 	d1.WriteByte(k.Count1)
 	d1.Write(k.Constant1)
 	d1.WriteByte(k.Errors1)
-	k1crc := crc16.Calc(d1.Bytes())
 
 	d2 := bytes.NewBuffer([]byte{})
 	d2.Write(k.IskHI2)
@@ -129,8 +125,8 @@ func (k *Keys) Checksum() (uint16, uint16) {
 	d2.WriteByte(k.Count2)
 	d2.Write(k.Constant2)
 	d2.WriteByte(k.Errors2)
-	k2crc := crc16.Calc(d1.Bytes())
-	return k1crc, k2crc
+
+	return crc16.Calc(d1.Bytes()), crc16.Calc(d2.Bytes())
 }
 
 func (k *Keys) updateKeysChecksum() {
