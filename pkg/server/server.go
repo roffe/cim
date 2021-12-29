@@ -125,7 +125,7 @@ func loadTemplates(r *gin.Engine) error {
 				}
 				u32 := binary.BigEndian.Uint32(by)
 				_, err = out.WriteString(
-					fmt.Sprintf(`<span class="field byte-%d">0x%s</span> `, u32, b),
+					fmt.Sprintf(`<span data-i="%d" class="field byte-%d">0x%s</span> `, u32, u32, b),
 				)
 				if err != nil {
 					log.Fatal(err)
