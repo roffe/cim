@@ -1,83 +1,101 @@
 <script type="application/javascript">
-
-$.fn.serializeControls = function() {
-  var data = {};
-
-  function buildInputObject(arr, val) {
-    if (arr.length < 1)
-      return val;  
-    var objkey = arr[0];
-    if (objkey.slice(-1) == "]") {
-      objkey = objkey.slice(0,-1);
-    }  
-    var result = [];
-    if (arr.length == 1){
-      result[objkey] = val;
-    } else {
-      arr.shift();
-      var nestedVal = buildInputObject(arr,val);
-      result[objkey] = nestedVal;
+{{.sections}}
+$("input").blur(function () {
+    if ($(this).attr("data-selected-all")) {
+        //Remove atribute to allow select all again on focus        
+        $(this).removeAttr("data-selected-all");
     }
-    return result;
-  }
+});
 
-  $.each(this.serializeArray(), function(index) {
-    var val = this.value;
-    var c = this.name.split("[");
-    var a = buildInputObject(c, val);
-    $.extend(true, data, a);
-  });
-  
-  return data;
-}
+$("input").click(function () {
+    if (!$(this).attr("data-selected-all")) {
+        try {
+            $(this).selectionStart = 0;
+            $(this).selectionEnd = $(this).value.length + 1;
+            //add atribute allowing normal selecting post focus
+            $(this).attr("data-selected-all", true);
+        } catch (err) {
+            $(this).select();
+            //add atribute allowing normal selecting post focus
+            $(this).attr("data-selected-all", true);
+        }
+    }
+});
 
-function getFormData($form){
-    var unindexed_array = $form.serializeArray();
-    var indexed_array = {};
+$.fn.serializeControls = function () {
+    var data = {};
 
-    $.map(unindexed_array, function(n, i){
-    console.log(n);
-    console.log(i);
-        indexed_array[n['name']] = n['value'];
+    function buildInputObject(arr, val) {
+        if (arr.length < 1)
+            return val;
+        var objkey = arr[0];
+        if (objkey.slice(-1) == "]") {
+            objkey = objkey.slice(0, -1);
+        }
+        var result = [];
+        if (arr.length == 1) {
+            result[objkey] = val;
+        } else {
+            arr.shift();
+            var nestedVal = buildInputObject(arr, val);
+            result[objkey] = nestedVal;
+        }
+        return result;
+    }
+
+    $.each(this.serializeArray(), function (index) {
+        var val = this.value;
+        var c = this.name.split("[");
+        var a = buildInputObject(c, val);
+        $.extend(true, data, a);
     });
 
-    return indexed_array;
+    return data;
 }
-
 
 $("#options").on("submit", function (e) {
-  e.preventDefault();
-  var $form = $(e.target);
-  let dd = JSON.stringify($form.serializeControls(), null, 2)
-  console.log(dd)
+    e.preventDefault();
+    var $form = $(e.target);
+    let payload = JSON.stringify($form.serializeControls(), null, 2)
+    console.log(payload);
     $.ajax("/update", {
-    data : dd,
-    contentType : 'application/json',
-    type : 'POST'
+        data: payload,
+        contentType: 'application/json',
+        type: 'POST',
+        success: function (data) {
+            $('#dump_contents').html(data.hexview);
+            setTimeout(() => {
+                processSections();
+            }, 50);
+
+            $('input[name="file_update"]').val(data.B64);
+            $('input[name="file"]').val(data.B64);
+        }
     });
 });
-    
-    
-    
-    
-    $('.hexByte, .asciiByte, .field').hover(function () {
-        var i = $(this).data('i');
-        var section = $(this).data('section');
-        if (section) {
-            $('.section-' + section.id).toggleClass('hoverSection', true);
-        } else {
-            $('.byte-' + i).toggleClass('hover', true);
-        }
-    }, function () {
-        var i = $(this).data('i');
-        var section = $(this).data('section');
-        if (section) {
-            $('.section-' + section.id).toggleClass('hoverSection', false);
-        } else {
-            $('.byte-' + i).toggleClass('hover', false);
-        }
-    });
-    {{.sections}}
+
+
+
+
+$('.hexByte, .asciiByte, .field').hover(function () {
+    var i = $(this).data('i');
+    var section = $(this).data('section');
+    if (section) {
+        $('.section-' + section.id).toggleClass('hoverSection', true);
+    } else {
+        $('.byte-' + i).toggleClass('hover', true);
+    }
+}, function () {
+    var i = $(this).data('i');
+    var section = $(this).data('section');
+    if (section) {
+        $('.section-' + section.id).toggleClass('hoverSection', false);
+    } else {
+        $('.byte-' + i).toggleClass('hover', false);
+    }
+});
+
+function processSections() {
     for (let i = 0; i < sections.length; i++) {
         let section = sections[i];
         section.title = section.id;
@@ -107,4 +125,9 @@ $("#options").on("submit", function (e) {
             });
         }
     }
+};
+
+$('document').ready(function() {
+    processSections();
+});
 </script>

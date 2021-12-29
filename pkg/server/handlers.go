@@ -29,25 +29,26 @@ func faviconHandler(c *gin.Context) {
 }
 
 type updateRequest struct {
-	VinOpt             string   `json:"vin"`
-	PinOpt             string   `json:"pin"`
-	SasOpt             string   `json:"sas"`
-	KeyCountOpt        string   `json:"keycount"`
-	KeyOpt             []string `json:"key"`
-	IskHiOpt           string   `json:"isk_hi"`
-	IskLoOpt           string   `json:"isk_lo"`
-	SyncOpt            []string `json:"sync"`
-	ProgIDOpt          []string `json:"prog_id"`
-	SnstickerOpt       string   `json:"snsticker"`
-	Partno1Opt         string   `json:"partno1"`
-	Pnbase1Opt         string   `json:"pnbase1"`
-	PndelphiOpt        string   `json:"pndelphi"`
-	PartnoOpt          string   `json:"partno"`
-	ConfVerOpt         string   `json:"conf_ver"`
-	FpDateOpt          string   `json:"fp_date"`
-	ProgrammingDateOpt string   `json:"programming_date"`
-	File               string   `json:"file"`
-	Filename           string   `json:"filename"`
+	Vin             string   `json:"vin"`
+	SpsCount        string   `json:"sps_count"`
+	Pin             string   `json:"pin"`
+	Sas             string   `json:"sas"`
+	KeyCount        string   `json:"keycount"`
+	Key             []string `json:"key"`
+	IskHi           string   `json:"isk_hi"`
+	IskLo           string   `json:"isk_lo"`
+	Sync            []string `json:"sync"`
+	ProgID          []string `json:"prog_id"`
+	Snsticker       string   `json:"snsticker"`
+	Partno1         string   `json:"partno1"`
+	Pnbase1         string   `json:"pnbase1"`
+	Pndelphi        string   `json:"pndelphi"`
+	Partno          string   `json:"partno"`
+	ConfVer         string   `json:"conf_ver"`
+	FpDate          string   `json:"fp_date"`
+	ProgrammingDate string   `json:"programming_date"`
+	File            string   `json:"file_update"`
+	Filename        string   `json:"filename"`
 }
 
 func updateHandler(c *gin.Context) {
@@ -68,17 +69,16 @@ func updateHandler(c *gin.Context) {
 		return
 	}
 
-	if err := fw.Vin.Set(u.VinOpt); err != nil {
+	if err := fw.Pin.Set(u.Pin); err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := fw.Pin.Set(u.PinOpt); err != nil {
+	if err := updateVin(fw, u); err != nil {
 		c.String(http.StatusBadRequest, err.Error())
-		return
 	}
 
-	if u.SasOpt == "on" {
+	if u.Sas == "on" {
 		fw.SetSasOpt(true)
 	} else {
 		fw.SetSasOpt(false)
@@ -89,20 +89,97 @@ func updateHandler(c *gin.Context) {
 		return
 	}
 
-	fw.Dump()
-	c.String(200, "ok, not implemented yet")
+	if err := updateSync(fw, u); err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("invalid sync data: %v", err))
+		return
+	}
+
+	for i, s := range u.ProgID {
+		if err := fw.SetProgrammingID(i, s); err != nil {
+			c.String(http.StatusBadRequest, fmt.Sprintf("invalid programming id %d value: %s: %v", i, s, err))
+			return
+		}
+	}
+
+	fwBytes, err := fw.Bytes()
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	hexRows, err := buildHexview(fw)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	//c.String(200, hexRows)
+	/*
+		sections := generateSections(fw)
+		styles := generateStyles(sections)
+		jsSections := jsSections(sections)
+
+		c.HTML(http.StatusOK, "view.tmpl", gin.H{
+			"filename": filepath.Base(u.Filename),
+			"fw":       fw,
+			"B64":      base64.StdEncoding.EncodeToString(fwBytes),
+			"Hexview":  template.HTML(hexRows),
+			"sections": template.JS(jsSections),
+			"styles":   styles,
+		})
+	*/
+
+	c.JSON(http.StatusOK, gin.H{
+		"B64":     base64.StdEncoding.EncodeToString(fwBytes),
+		"hexview": hexRows,
+	})
+}
+
+func updateVin(fw *cim.Bin, u updateRequest) error {
+	if err := fw.Vin.Set(u.Vin); err != nil {
+		return fmt.Errorf("filed to set vin: %v", err)
+	}
+	if n, err := strconv.ParseUint(u.SpsCount, 0, 8); err == nil {
+		fw.Vin.SetSpsCount(uint8(n))
+	} else {
+		return fmt.Errorf("failed to parse sps count: %q %s", u.SpsCount, err.Error())
+	}
+	return nil
+}
+
+func updateSync(fw *cim.Bin, u updateRequest) error {
+	for i, opt := range u.Sync {
+		syncData, err := hex.DecodeString(opt)
+		if err != nil {
+			return fmt.Errorf("failed to decode sync data %d: %v", i, err)
+		}
+		fw.Sync.SetData(uint8(i), syncData)
+
+	}
+	return nil
 }
 
 func updateKeys(fw *cim.Bin, u updateRequest) error {
 
-	n, err := strconv.ParseUint(u.KeyCountOpt, 0, 8)
+	hi, err := hex.DecodeString(u.IskHi)
 	if err != nil {
-		return fmt.Errorf("failed to parse key count: %q %s", u.KeyCountOpt, err.Error())
+		return fmt.Errorf("failed to parse ISK High: %X: %s", u.IskHi, err.Error())
 	}
-	n2 := uint8(n)
-	fw.Keys.Count1, fw.Keys.Count2 = n2, n2
+	lo, err := hex.DecodeString(u.IskLo)
+	if err != nil {
+		return fmt.Errorf("failed to parse ISK Low: %X: %s", u.IskHi, err.Error())
+	}
 
-	for i, k := range u.KeyOpt {
+	if err := fw.Keys.SetIsk(hi, lo); err != nil {
+		return fmt.Errorf("failed to set ISK: %v", err)
+	}
+
+	if n, err := strconv.ParseUint(u.KeyCount, 0, 8); err == nil {
+		fw.Keys.SetKeyCount(uint8(n))
+	} else {
+		return fmt.Errorf("failed to parse key count: %q %s", u.KeyCount, err.Error())
+	}
+
+	for i, k := range u.Key {
 		b, err := hex.DecodeString(k)
 		if err != nil {
 			return err
@@ -145,6 +222,45 @@ func uploadHandler(c *gin.Context) {
 		return
 	}
 
+	hexRows, err := buildHexview(fw)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	sections := generateSections(fw)
+	styles := generateStyles(sections)
+	jsSections := jsSections(sections)
+
+	c.HTML(http.StatusOK, "view.tmpl", gin.H{
+		"filename": filepath.Base(filename),
+		"fw":       fw,
+		"B64":      base64.StdEncoding.EncodeToString(fwBytes),
+		"Hexview":  template.HTML(hexRows),
+		"sections": template.JS(jsSections),
+		"styles":   styles,
+	})
+}
+
+func jsSections(sections []Section) string {
+	js := strings.Builder{}
+	js.WriteString(`var sections = [`)
+	for i, s := range sections {
+		js.WriteString(s.String())
+		if i == len(sections)-1 {
+			break
+		}
+		js.WriteString(",\n")
+	}
+	js.WriteString(`]`)
+	return js.String()
+}
+
+func buildHexview(fw *cim.Bin) (string, error) {
+	fwBytes, err := fw.Bytes()
+	if err != nil {
+		return "", err
+	}
 	hexRows := strings.Builder{}
 	asciiColumns := strings.Builder{}
 
@@ -179,29 +295,7 @@ func uploadHandler(c *gin.Context) {
 	}
 
 	hexRows.WriteString("</div>")
-
-	sections := generateSections(fw)
-	styles := generateStyles(sections)
-
-	out := strings.Builder{}
-	out.WriteString(`var sections = [`)
-	for i, s := range sections {
-		out.WriteString(s.String())
-		if i == len(sections)-1 {
-			break
-		}
-		out.WriteString(",\n")
-	}
-	out.WriteString(`]`)
-
-	c.HTML(http.StatusOK, "view.tmpl", gin.H{
-		"filename": filepath.Base(filename),
-		"fw":       fw,
-		"B64":      base64.StdEncoding.EncodeToString(fwBytes),
-		"Hexview":  template.HTML(hexRows.String()),
-		"sections": template.JS(out.String()),
-		"styles":   template.CSS(styles),
-	})
+	return hexRows.String(), nil
 }
 
 func saveHandler(c *gin.Context) {

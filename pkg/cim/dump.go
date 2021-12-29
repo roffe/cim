@@ -45,9 +45,12 @@ func (fw *Bin) Dump() {
 		fmt.Println("- Factory programming only")
 	} else {
 		fmt.Printf("- SPS Counter: %d\n", fw.Vin.SpsCount)
-		for i := 0; i < int(fw.Vin.SpsCount); i++ {
-			fmt.Printf("- Workshop %d ID: %s\n", i+1, strings.TrimRight(fw.ProgrammingID[i], " "))
+		for i, w := range fw.ProgrammingID {
+			fmt.Printf("- Workshop %d ID: %s\n", i+1, strings.TrimRight(w, " "))
 		}
+		//for i := 0; i < int(fw.Vin.SpsCount); i++ {
+		//	fmt.Printf("- Workshop %d ID: %s\n", i+1, strings.TrimRight(fw.ProgrammingID[i], " "))
+		//}
 	}
 	fmt.Println()
 

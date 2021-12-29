@@ -11,8 +11,13 @@ type Sync struct {
 	Checksum uint16   `bin:"le,len:2" json:"checksum"`
 } // 22 bytes
 
-func (s *Sync) SetData(no uint8, data []byte) {
+func (s *Sync) SetData(no uint8, data []byte) error {
+	if len(data) != 4 {
+		return fmt.Errorf("Sync data %d invalid length %d, should be 4 bytes", no, len(data))
+	}
 	s.Data[no] = data
+	s.updateChecksum()
+	return nil
 }
 
 func (s *Sync) validate() error {
@@ -24,10 +29,14 @@ func (s *Sync) validate() error {
 	return nil
 }
 
-func (p *Sync) Crc16() uint16 {
+func (s *Sync) Crc16() uint16 {
 	var data []byte
-	for _, b := range p.Data {
+	for _, b := range s.Data {
 		data = append(data, b...)
 	}
 	return crc16.Calc(data)
+}
+
+func (s *Sync) updateChecksum() {
+	s.Checksum = s.Crc16()
 }

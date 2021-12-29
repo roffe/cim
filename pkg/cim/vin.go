@@ -39,7 +39,15 @@ func (v *Vin) Set(vin string) error {
 		return fmt.Errorf("vin is to long")
 	}
 	v.Data = fmt.Sprintf("%-17s", vin)
-	v.Checksum = v.Crc16()
-
+	v.updateChecksum()
 	return nil
+}
+
+func (v *Vin) SetSpsCount(value uint8) {
+	v.SpsCount = value
+	v.updateChecksum()
+}
+
+func (v *Vin) updateChecksum() {
+	v.Checksum = v.Crc16()
 }

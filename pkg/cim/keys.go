@@ -31,7 +31,7 @@ func (k *Keys) Count(no uint8) error {
 	}
 	k.Count1 = no
 	k.Count2 = no
-	k.updateKeysChecksum()
+	k.updateChecksum()
 	return nil
 }
 
@@ -44,19 +44,29 @@ func (k *Keys) SetKey(keyno uint8, value []byte) error {
 		return fmt.Errorf("invalid key size")
 	}
 	k.Data1[keyno], k.Data2[keyno] = value, value
-	k.updateKeysChecksum()
+	k.updateChecksum()
 	return nil
 }
 
-func (k *Keys) SetIskHi(value []byte) {
-	k.IskHI1 = value
-	k.IskHI2 = value
-	k.updateKeysChecksum()
+func (k *Keys) SetKeyCount(keys uint8) error {
+	if keys > 5 {
+		return fmt.Errorf("maximum number of keys is 5")
+	}
+	k.Count1, k.Count2 = keys, keys
+	return nil
 }
 
-func (k *Keys) SetIskLo(value []byte) {
-	k.IskLO1, k.IskLO2 = value, value
-	k.updateKeysChecksum()
+func (k *Keys) SetIsk(high, low []byte) error {
+	if len(high) != 4 {
+		return fmt.Errorf("invalid isk high value length")
+	}
+	if len(low) != 2 {
+		return fmt.Errorf("invalid isk low value length")
+	}
+	k.IskHI1, k.IskHI2 = high, high
+	k.IskLO1, k.IskLO2 = low, low
+	k.updateChecksum()
+	return nil
 }
 
 func (k *Keys) validate() error {
@@ -92,7 +102,7 @@ func (k *Keys) validate() error {
 		return fmt.Errorf("key 5, bank 1 and 2 does not match, corrupt memory?")
 	}
 
-	c1, c2 := k.Checksum()
+	c1, c2 := k.Crc16()
 
 	if c1 != k.Checksum1 {
 		return fmt.Errorf("calculated bank 1 checksum %X does not match stored %X", c1, k.Checksum1)
@@ -105,7 +115,7 @@ func (k *Keys) validate() error {
 	return nil
 }
 
-func (k *Keys) Checksum() (uint16, uint16) {
+func (k *Keys) Crc16() (uint16, uint16) {
 	d1 := bytes.NewBuffer([]byte{})
 	d1.Write(k.IskHI1)
 	d1.Write(k.IskLO1)
@@ -129,6 +139,6 @@ func (k *Keys) Checksum() (uint16, uint16) {
 	return crc16.Calc(d1.Bytes()), crc16.Calc(d2.Bytes())
 }
 
-func (k *Keys) updateKeysChecksum() {
-	k.Checksum1, k.Checksum2 = k.Checksum()
+func (k *Keys) updateChecksum() {
+	k.Checksum1, k.Checksum2 = k.Crc16()
 }

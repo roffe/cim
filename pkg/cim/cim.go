@@ -177,6 +177,14 @@ func (bin *Bin) SetSasOpt(opt bool) {
 	}
 }
 
+func (bin *Bin) SetProgrammingID(no int, value string) error {
+	if len(value) > 10 {
+		return fmt.Errorf("programming id to long")
+	}
+	bin.ProgrammingID[no] = fmt.Sprintf("%-10s", value)
+	return nil
+}
+
 func (*Bin) BCDDate(r binstruct.Reader) (time.Time, error) {
 	return bcdDate("06-01-02", r)
 }
