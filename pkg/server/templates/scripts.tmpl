@@ -58,7 +58,7 @@ $("#options").on("submit", function (e) {
     var $form = $(e.target);
     let payload = JSON.stringify($form.serializeControls(), null, 2)
     console.log(payload);
-    $.ajax("/update", {
+    $.ajax("update", {
         data: payload,
         contentType: 'application/json',
         type: 'POST',
