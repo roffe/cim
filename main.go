@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -39,8 +38,8 @@ func init() {
 func main() {
 
 	// if we pass a filename, print to the console instead of starting ui
-	if len(os.Args) >= 2 {
-		filename := os.Args[1]
+	if len(flag.Args()) >= 1 {
+		filename := flag.Args()[0]
 		fw, err := cim.MustLoad(filename)
 		if err != nil {
 			log.Fatal(err)
