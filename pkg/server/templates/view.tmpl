@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <div class="container content">
+    <div class="container content input-group-sm">
         <div class="row">
             <div class="col">
                 <br>
@@ -30,27 +30,49 @@
         <hr>
         <form action="" id="options">
             <div class="row">
-
-
                 <div class="col">
-
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                                <label for="vin">Vin:</label>
-                                <input autocomplete="off" class="form-control field byte-28" data-i="28" type="text"
-                                    maxlength="17" size="17" id="vin" name="vin" value="{{.fw.Vin.Data}}">&nbsp;<b>Model
-                                    Year:</b>
-                                {{.fw.ModelYear}}
-                                <label for="pin">Pin:</label>
-                                <input class="form-control field byte-175" data-i="175" type="text" maxlength="8"
-                                    size="8" id="pin" name="pin" value="{{printHex .fw.Pin.Data1}}">
-                                <label for="sas">Steering Angle Sensor:</label>
-                                <input class="form-check-input field byte-4" data-i="4" type="checkbox" id="sas"
-                                    name="sas" {{boolChecked .fw.SasOpt}}><br>
-                                <label for="keycount">Programmed keys:</label>
-                                <input class="form-control field byte-279" data-i="279" min="0" max="5" id="keycount"
-                                    name="keycount" type="number" value="{{.fw.Keys.Count1}}">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label for="vin">Vin:</label>
+                                        <input autocomplete="off" class="form-control field byte-28" data-i="28"
+                                            type="text" maxlength="17" size="17" id="vin" name="vin"
+                                            value="{{.fw.Vin.Data}}">&nbsp;<b>Model
+                                            Year:</b>
+                                        {{.fw.ModelYear}}
+                                        <label for="pin">Pin:</label>
+                                        <input class="form-control field byte-175" data-i="175" type="text"
+                                            maxlength="8" size="8" id="pin" name="pin"
+                                            value="{{printHex .fw.Pin.Data1}}">
+                                        <label for="sas">Steering Angle Sensor:</label>
+                                        <input class="form-check-input field byte-4" data-i="4" type="checkbox" id="sas"
+                                            name="sas" {{boolChecked .fw.SasOpt}}><br>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="programming_date">Last programming date:</label>
+                                        <input class="form-control field byte-2" data-i="2" type="date"
+                                            id="programming_date" name="programming_date"
+                                            value="{{isoDate .fw.ProgrammingDate}}">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="">Factory programming date:</label>
+                                        <input class="form-control field byte-466" type="date" data-i="466"
+                                            maxlength="10" size="10" id="fp_date" name="fp_date"
+                                            value="{{isoDate .fw.ProgrammingFactoryDate}}"><br>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label for="keycount">Programmed keys:</label>
+                                        <input class="form-control field byte-279" data-i="279" min="0" max="5"
+                                            id="keycount" name="keycount" type="number" value="{{.fw.Keys.Count1}}">
+                                    </div>
+                                </div>
                             </div>
                             <br>
                         </div>
@@ -60,6 +82,7 @@
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-group">
+                                        <label>Keys:</label>
                                         {{range $key, $val := .fw.Keys.Data1}}
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -70,7 +93,8 @@
                                                 maxlength="8" size="8" value="{{printHex $val}}">
                                             <br>
                                         </div>
-                                        {{end}}
+                                        {{end}}<br>
+                                        <b>PCF:</b> <i>6732F2C5</i><br>
                                     </div>
                                 </div>
                                 <div class="col-6">
@@ -83,28 +107,29 @@
                                         <input class="form-control field byte-257" data-i="257" type="text"
                                             maxlength="4" size="4" id="isk_lo" name="isk_lo"
                                             value="{{printHex .fw.Keys.IskLO1}}">
+
+                                        <label for="psk_hi">PSK High:</label>
+                                        <input class="form-control field byte-489" data-i="485" maxlength="4" size="4"
+                                            id="psk_hi" name="psk_hi" value="{{printHex .fw.PSK.High}}">
+
+                                        <label for="psk_lo">PSK Low:</label>
+                                        <input class="form-control field byte-485" data-i="485" maxlength="8" size="8"
+                                            id="psk_lo" name="psk_lo" value="{{printHex .fw.PSK.Low}}">
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div><br>
                     <div class="row">
-                        <div class="col-6">
-                            <label for="psk_hi">PSK High:</label>
-                            <input class="form-control field byte-489" data-i="485" maxlength="4" size="4" id="psk_hi"
-                                name="psk_hi" value="{{printHex .fw.PSK.High}}">
-                            <b>PCF:</b> <i>6732F2C5</i><br>
-                        </div>
-                        <div class="col-6">
-                            <label for="psk_lo">PSK Low:</label>
-                            <input class="form-control field byte-485" data-i="485" maxlength="8" size="8" id="psk_lo"
-                                name="psk_lo" value="{{printHex .fw.PSK.Low}}">
+                        <div class="col">
+
                         </div>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label>Sync</label>
+                        <label>Sync:</label>
                         {{range $key, $val := .fw.Sync.Data}}
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -119,7 +144,6 @@
                             name="sps_count" value="{{.fw.Vin.SpsCount}}"><br>
 
                         <label>Programming IDs:</label>
-
                         {{range $key, $val := .fw.ProgrammingID}}
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -134,40 +158,44 @@
                     </div>
                 </div>
                 <div class="col">
-                    <b>Part numbers:</b><br>
-                    <ul>
-                        <li>Serial sticker:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-461"
-                                type="text" data-i="461" maxlength="10" size="11" id="snsticker" name="snsticker"
-                                value="{{.fw.SnSticker}}"></li>
-                        <li>End model (HW+SW):&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-11" type="text"
-                                data-i="11" maxlength="8" size="8" id="partno1" name="partno1"
-                                value="{{.fw.PartNo1}}"><input class="field byte-15" type="text" data-i="15"
-                                maxlength="2" size="2" value="{{.fw.PartNo1Rev}}"></li>
-                        <li>Base model (HW+boot):&nbsp; <input class="field byte-21" type="text" data-i="21"
-                                maxlength="8" size="8" id="pnbase1" name="pnbase1" value="{{.fw.PnBase1}}"><input
-                                class="field byte-25" type="text" data-i="25" maxlength="2" size="2"
-                                value="{{.fw.PnBase1Rev}}"></li>
-                        <li>Delphi part number:&nbsp;&nbsp;&nbsp; <input class="field byte-472" data-i="472" type="text"
-                                maxlength="8" size="8" id="pndelphi" name="pndelphi" value="{{.fw.DelphiPN}}"></li>
-                        <li>SAAB part number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input class="field byte-478" data-i="478"
-                                maxlength="8" size="8" type="text" id="partno" name="partno" value="{{.fw.PartNo}}">
-                        </li>
-                        <li>Configuration Version: <input class="field byte-17" type="text" data-i="17" maxlength="8"
-                                size="8" id="conf_ver" name="conf_ver" value="{{.fw.ConfigurationVersion}}"></li>
-                    </ul>
-                    <b>Factory programming date:</b> <input class="field byte-466" type="date" data-i="466"
-                        maxlength="10" size="10" id="fp_date" name="fp_date"
-                        value="{{isoDate .fw.ProgrammingFactoryDate}}"><br>
-                    <br>
-                    <b>Programming history:</b><br>
-                    <ul>
-                        <li><b>Last programming date:</b> <input class="field byte-2" data-i="2" type="date"
-                                id="programming_date" name="programming_date" value="{{isoDate .fw.ProgrammingDate}}">
-                        </li>
-                        {{if eq .fw.Vin.SpsCount 0}}
-                        <li><b>Factory programming only</b></li>
-                        {{end}}
-                    </ul>
+                    <label>Part numbers:</label>
+                    <label for="snsticker">Serial sticker:</label>
+                    <input class="form-control field byte-461" type="text" data-i="461" maxlength="10" size="11"
+                        id="snsticker" name="snsticker" value="{{.fw.SnSticker}}"><br>
+                    <label for="partno1">End model (HW+SW)</label>
+                    <div class="row">
+                        <div class="col-10">
+                            <input class="form-control field byte-11" type="text" data-i="11" maxlength="8" size="8"
+                                id="partno1" name="partno1" value="{{.fw.PartNo1}}"><br>
+                        </div>
+                        <div class="col-2">
+                            <input class="form-control field byte-15" type="text" data-i="15" maxlength="2" size="2"
+                                value="{{.fw.PartNo1Rev}}"><br>
+                        </div>
+                    </div>
+                    <label for="pnbase1">Base model (HW+boot)</label>
+                    <div class="row">
+                        <div class="col-10">
+                            <input class="form-control field byte-21" type="text" data-i="21" maxlength="8" size="8"
+                                id="pnbase1" name="pnbase1" value="{{.fw.PnBase1}}">
+                        </div>
+                        <div class="col-2">
+                            <input class="form-control field byte-25" type="text" data-i="25" maxlength="2" size="2"
+                                value="{{.fw.PnBase1Rev}}"><br>
+                        </div>
+                    </div>
+
+                    <label for="pndelphi">Delphi part number:</label>
+                    <input class="form-control field byte-472" data-i="472" type="text" maxlength="8" size="8"
+                        id="pndelphi" name="pndelphi" value="{{.fw.DelphiPN}}"><br>
+                    <label for="partno">SAAB part number:</label>
+                    <input class="form-control field byte-478" data-i="478" maxlength="8" size="8" type="text"
+                        id="partno" name="partno" value="{{.fw.PartNo}}"><br>
+
+                    <label for="conf_ver">Configuration Version: </label>
+                    <input class="form-control field byte-17" type="text" data-i="17" maxlength="8" size="8"
+                        id="conf_ver" name="conf_ver" value="{{.fw.ConfigurationVersion}}"><br>
+
                 </div>
                 <div class="row">
                     <div class="col">
