@@ -178,5 +178,5 @@ func psafe(b byte) string {
 		return "&block;"
 	}
 
-	return fmt.Sprintf("%s", []byte{b})
+	return string(b)
 }
