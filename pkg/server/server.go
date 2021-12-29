@@ -24,8 +24,8 @@ import (
 //go:embed templates/*.tmpl
 var tp embed.FS
 
-func Run(enableShutdown bool) error {
-	r, err := setupRouter(enableShutdown)
+func Run(enableShutdown bool, prefix string) error {
+	r, err := setupRouter(enableShutdown, prefix)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func openbrowser(url string) {
 
 }
 
-func setupRouter(enableShutdown bool) (*gin.Engine, error) {
+func setupRouter(enableShutdown bool, path string) (*gin.Engine, error) {
 	r := gin.Default()
 	// Load templates
 	if err := loadTemplates(r); err != nil {
@@ -66,11 +66,11 @@ func setupRouter(enableShutdown bool) (*gin.Engine, error) {
 	// Set upload limit for multipart form
 	r.MaxMultipartMemory = 1 << 20
 
-	r.GET("/", func(c *gin.Context) { c.HTML(http.StatusOK, "upload.tmpl", nil) })
-	r.POST("/save", saveHandler)
-	r.POST("/", uploadHandler)
-	r.POST("/update", updateHandler)
-	r.GET("/favicon.ico", faviconHandler)
+	r.GET(p(path, "/"), func(c *gin.Context) { c.HTML(http.StatusOK, "upload.tmpl", nil) })
+	r.POST(p(path, "/save"), saveHandler)
+	r.POST(p(path, "/"), uploadHandler)
+	r.POST(p(path, "/update"), updateHandler)
+	r.GET(p(path, "/favicon.ico"), faviconHandler)
 
 	if enableShutdown {
 		r.GET("/shutdown", func(c *gin.Context) {
@@ -82,6 +82,15 @@ func setupRouter(enableShutdown bool) (*gin.Engine, error) {
 		})
 	}
 	return r, nil
+}
+
+func p(prefix, path string) string {
+	var o strings.Builder
+	if prefix != "" {
+		o.WriteString(prefix)
+	}
+	o.WriteString(path)
+	return o.String()
 }
 
 var bootOrder = []string{"83", "1B", "57", "AF", "C3", "C7", "F3", "FD", "147", "160", "176", "1A2", "1B0", "1B8", "1BF", "1E5", "83", "B9", "DD", "122", "18C", "1A8", "1C6"}
