@@ -35,7 +35,6 @@ $("#options").on("submit", function (e) {
     e.preventDefault();
     var $form = $(e.target);
     let payload = JSON.stringify($form.serializeControls(), null, 2)
-    console.log(payload);
     $.ajax("update", {
         data: payload,
         contentType: 'application/json',
@@ -107,24 +106,23 @@ function processSections() {
         }
     }
 
-$('.hexByte, .asciiByte, .field').hover(function () {
-    var i = $(this).data('i');
-    var section = $(this).data('section');
-    if (section) {
-        $('.section-' + section.id).toggleClass('hoverSection', true);
-    } else {
-        $('.byte-' + i).toggleClass('hover', true);
-    }
-}, function () {
-    var i = $(this).data('i');
-    var section = $(this).data('section');
-    if (section) {
-        $('.section-' + section.id).toggleClass('hoverSection', false);
-    } else {
-        $('.byte-' + i).toggleClass('hover', false);
-    }
-});
-
+    $('.hexByte, .asciiByte, .field').hover(function () {
+        var i = $(this).data('i');
+        var section = $(this).data('section');
+        if (section) {
+            $('.section-' + section.id).toggleClass('hoverSection', true);
+        } else {
+            $('.byte-' + i).toggleClass('hover', true);
+        }
+    }, function () {
+        var i = $(this).data('i');
+        var section = $(this).data('section');
+        if (section) {
+            $('.section-' + section.id).toggleClass('hoverSection', false);
+        } else {
+            $('.byte-' + i).toggleClass('hover', false);
+        }
+    });
 };
 
 $('document').ready(function() {
