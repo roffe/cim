@@ -1,27 +1,5 @@
 <script type="application/javascript">
 {{.sections}}
-$("input").blur(function () {
-    if ($(this).attr("data-selected-all")) {
-        //Remove atribute to allow select all again on focus        
-        $(this).removeAttr("data-selected-all");
-    }
-});
-
-$("input").click(function () {
-    if (!$(this).attr("data-selected-all")) {
-        try {
-            $(this).selectionStart = 0;
-            $(this).selectionEnd = $(this).value.length + 1;
-            //add atribute allowing normal selecting post focus
-            $(this).attr("data-selected-all", true);
-        } catch (err) {
-            $(this).select();
-            //add atribute allowing normal selecting post focus
-            $(this).attr("data-selected-all", true);
-        }
-    }
-});
-
 $.fn.serializeControls = function () {
     var data = {};
 
@@ -74,25 +52,29 @@ $("#options").on("submit", function (e) {
 });
 
 
-
-
-$('.hexByte, .asciiByte, .field').hover(function () {
-    var i = $(this).data('i');
-    var section = $(this).data('section');
-    if (section) {
-        $('.section-' + section.id).toggleClass('hoverSection', true);
-    } else {
-        $('.byte-' + i).toggleClass('hover', true);
-    }
-}, function () {
-    var i = $(this).data('i');
-    var section = $(this).data('section');
-    if (section) {
-        $('.section-' + section.id).toggleClass('hoverSection', false);
-    } else {
-        $('.byte-' + i).toggleClass('hover', false);
+$("input").blur(function () {
+    if ($(this).attr("data-selected-all")) {
+        //Remove atribute to allow select all again on focus        
+        $(this).removeAttr("data-selected-all");
     }
 });
+
+$("input").click(function () {
+    if (!$(this).attr("data-selected-all")) {
+        try {
+            $(this).selectionStart = 0;
+            $(this).selectionEnd = $(this).value.length + 1;
+            //add atribute allowing normal selecting post focus
+            $(this).attr("data-selected-all", true);
+        } catch (err) {
+            $(this).select();
+            //add atribute allowing normal selecting post focus
+            $(this).attr("data-selected-all", true);
+        }
+    }
+});
+
+
 
 function processSections() {
     for (let i = 0; i < sections.length; i++) {
@@ -124,6 +106,25 @@ function processSections() {
             });
         }
     }
+
+$('.hexByte, .asciiByte, .field').hover(function () {
+    var i = $(this).data('i');
+    var section = $(this).data('section');
+    if (section) {
+        $('.section-' + section.id).toggleClass('hoverSection', true);
+    } else {
+        $('.byte-' + i).toggleClass('hover', true);
+    }
+}, function () {
+    var i = $(this).data('i');
+    var section = $(this).data('section');
+    if (section) {
+        $('.section-' + section.id).toggleClass('hoverSection', false);
+    } else {
+        $('.byte-' + i).toggleClass('hover', false);
+    }
+});
+
 };
 
 $('document').ready(function() {
