@@ -15,41 +15,87 @@
 
 <body>
     <div class="container content">
+        <div class="row">
+            <div class="col">
+                <br>
+                <h2>CIM Dump Editor <a href="/"><button>Back</button></a></h2>
+                <h6><b>Filename:</b> {{.filename}}&nbsp;</h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <b>MD5:</b> {{.fw.MD5}} <b>CRC32:</b> {{.fw.CRC32}}
+            </div>
+        </div>
+        <hr>
         <form action="" id="options">
             <div class="row">
+
+
                 <div class="col">
-                    <br>
-                    <h2>CIM Dump Editor <a href="/"><button>Back</button></a></h2>
-                    <h6><b>Filename:</b> {{.filename}}&nbsp;</h6>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <b>Vin:</b> <input class="field byte-28" data-i="28" type="text" maxlength="17" size="17"
+                                id="vin" name="vin" value="{{.fw.Vin.Data}}">&nbsp;<b>Model Year:</b>
+                            {{.fw.ModelYear}}<br>
+                            <b>Pin:</b> <input class="field byte-175" data-i="175" type="text" maxlength="8" size="8"
+                                id="pin" name="pin" value="{{printHex .fw.Pin.Data1}}"><br><br>
+                            <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4" data-i="4" type="checkbox"
+                                id="sas" name="sas" {{boolChecked .fw.SasOpt}}><br>
+                            <b>Programmed keys:</b> <input class="field byte-279" data-i="279" style="width: 35px;"
+                                min="0" max="5" id="keycount" name="keycount" type="number"
+                                value="{{.fw.Keys.Count1}}"><br><br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-5">
+                                    {{range $key, $val := .fw.Keys.Data1}}
+                                    <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text"
+                                        data-i="{{keyOffset $key}}" id="key{{$key}}" name="key[{{$key}}]" maxlength="8"
+                                        size="8" value="{{printHex $val}}"><br>
+                                    {{end}}<br>
+
+                                </div>
+
+                                <div class="col-5">
+                                    <b>ISK High:</b> <input class="field byte-253" data-i="253" type="text"
+                                        maxlength="8" size="8" id="isk_hi" name="isk_hi"
+                                        value="{{printHex .fw.Keys.IskHI1}}"><br>
+                                    <b>ISK Low:</b>&nbsp; <input class="field byte-257" data-i="257" type="text"
+                                        maxlength="4" size="4" id="isk_lo" name="isk_lo"
+                                        value="{{printHex .fw.Keys.IskLO1}}"><br>
+                                </div>
+
+                                <div class="col-2">
+
+                                </div>
+                            </div>
+
+
+
+
+
+                        </div>
+                    </div>
+
+
+
+
+
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <b>MD5:</b> {{.fw.MD5}} <b>CRC32:</b> {{.fw.CRC32}}
-                </div>
-            </div>
-            <hr>
-            <div class="row">
-                <div class="col">
-                    <b>Vin:</b> <input class="field byte-28" data-i="28" type="text" maxlength="17" size="17" id="vin"
-                        name="vin" value="{{.fw.Vin.Data}}">&nbsp;<b>Model Year:</b> {{.fw.ModelYear}}<br>
-                    <b>Pin:</b> <input class="field byte-175" data-i="175" type="text" maxlength="8" size="8" id="pin"
-                        name="pin" value="{{printHex .fw.Pin.Data1}}"><br><br>
-                    <b>Steering Angle Sensor:</b>&nbsp; <input class="field byte-4" data-i="4" type="checkbox" id="sas"
-                        name="sas" {{boolChecked .fw.SasOpt}}><br>
-                    <b>Programmed keys:</b> <input class="field byte-279" data-i="279" style="width: 35px;" min="0"
-                        max="5" id="keycount" name="keycount" type="number" value="{{.fw.Keys.Count1}}"><br><br>
-                    {{range $key, $val := .fw.Keys.Data1}}
-                    <b>{{$key}}</b> <input class="field byte-{{keyOffset $key}}" type="text" data-i="{{keyOffset $key}}"
-                        id="key{{$key}}" name="key[{{$key}}]" maxlength="8" size="8" value="{{printHex $val}}"><br>
-                    {{end}}<br>
-                </div>
+
+
+
+
+
+
+
                 <div class="col">
                     <b>Remotes:</b><br>
-                    <b>ISK High:</b> <input class="field byte-253" data-i="253" type="text" maxlength="8" size="8"
-                        id="isk_hi" name="isk_hi" value="{{printHex .fw.Keys.IskHI1}}"><br>
-                    <b>ISK Low:</b>&nbsp; <input class="field byte-257" data-i="257" type="text" maxlength="4" size="4"
-                        id="isk_lo" name="isk_lo" value="{{printHex .fw.Keys.IskLO1}}"><br>
+
                     <b>PCF:</b> <i>6732F2C5</i><br>
                     <b>Sync:</b><br>
                     {{range $key, $val := .fw.Sync.Data}}
