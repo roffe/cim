@@ -48,6 +48,12 @@ func (k *Keys) SetKey(keyno uint8, value []byte) error {
 	return nil
 }
 
+func (k *Keys) SetErrorCount(value uint8) error {
+	k.Errors1, k.Errors2 = value, value
+	k.updateChecksum()
+	return nil
+}
+
 func (k *Keys) SetKeyCount(keys uint8) error {
 	if keys > 5 {
 		return fmt.Errorf("maximum number of keys is 5")
