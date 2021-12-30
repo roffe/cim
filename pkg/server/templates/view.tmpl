@@ -27,10 +27,9 @@
                 <b>MD5:</b> {{.fw.MD5}} <b>CRC32:</b> {{.fw.CRC32}}
             </div>
         </div>
-        <hr>
         <form action="" id="options">
             <div class="row">
-                <div class="col">
+                <div class="col-4">
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
@@ -53,24 +52,14 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-6">
-                                        <label for="programming_date">Last programming date:</label>
-                                        <input class="form-control field byte-2" data-i="2" type="date"
-                                            id="programming_date" name="programming_date"
-                                            value="{{isoDate .fw.ProgrammingDate}}">
-                                    </div>
-                                    <div class="col-6">
-                                        <label for="">Factory programming date:</label>
-                                        <input class="form-control field byte-466" type="date" data-i="466"
-                                            maxlength="10" size="10" id="fp_date" name="fp_date"
-                                            value="{{isoDate .fw.ProgrammingFactoryDate}}"><br>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-12">
                                         <label for="keycount">Programmed keys:</label>
                                         <input class="form-control field byte-279" data-i="279" min="0" max="5"
                                             id="keycount" name="keycount" type="number" value="{{.fw.Keys.Count1}}">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="keyerrors">Key errors:</label>
+                                        <input class="form-control field byte-287" data-i="287" min="0" max="5"
+                                            id="keyerrors" name="keyerrors" type="number" value="{{.fw.Keys.Errors1}}">
                                     </div>
                                 </div>
                             </div>
@@ -99,22 +88,21 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label for="isk_hi">ISK High:</label>
-                                        <input class="form-control field byte-253" data-i="253" type="text"
-                                            maxlength="8" size="8" id="isk_hi" name="isk_hi"
-                                            value="{{printHex .fw.Keys.IskHI1}}">
-                                        <label for="isk_lo">ISK Low:</label>
-                                        <input class="form-control field byte-257" data-i="257" type="text"
-                                            maxlength="4" size="4" id="isk_lo" name="isk_lo"
-                                            value="{{printHex .fw.Keys.IskLO1}}">
 
-                                        <label for="psk_hi">PSK High:</label>
-                                        <input class="form-control field byte-489" data-i="485" maxlength="4" size="4"
-                                            id="psk_hi" name="psk_hi" value="{{printHex .fw.PSK.High}}">
+                                        <label>Sync:</label>
+                                        {{range $key, $val := .fw.Sync.Data}}
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">{{$key}}</div>
+                                            </div>
+                                            <input class="form-control field byte-352" type="text" data-i="352"
+                                                maxlength="8" size="8" id="sync{{$key}}" name="sync[{{$key}}]"
+                                                value="{{printHex $val}}">
+                                        </div>
+                                        {{end}}<br>
 
-                                        <label for="psk_lo">PSK Low:</label>
-                                        <input class="form-control field byte-485" data-i="485" maxlength="8" size="8"
-                                            id="psk_lo" name="psk_lo" value="{{printHex .fw.PSK.Low}}">
+
+
 
                                     </div>
                                 </div>
@@ -127,22 +115,38 @@
                         </div>
                     </div>
                 </div>
-                <div class="col">
+                <div class="col-4">
                     <div class="form-group">
-                        <label>Sync:</label>
-                        {{range $key, $val := .fw.Sync.Data}}
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">{{$key}}</div>
-                            </div>
-                            <input class="form-control field byte-352" type="text" data-i="352" maxlength="8" size="8"
-                                id="sync{{$key}}" name="sync[{{$key}}]" value="{{printHex $val}}">
-                        </div>
-                        {{end}}<br>
-                        <label for="sps_count">SPS Counter:</label>
-                        <input class="form-control field byte-54" data-i="54" min="0" type="number" id="sps_count"
-                            name="sps_count" value="{{.fw.Vin.SpsCount}}"><br>
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="isk_hi">ISK High:</label>
+                                <input class="form-control field byte-253" data-i="253" type="text" maxlength="8"
+                                    size="8" id="isk_hi" name="isk_hi" value="{{printHex .fw.Keys.IskHI1}}">
+                                <label for="isk_lo">ISK Low:</label>
+                                <input class="form-control field byte-257" data-i="257" type="text" maxlength="4"
+                                    size="4" id="isk_lo" name="isk_lo" value="{{printHex .fw.Keys.IskLO1}}">
 
+                                <label for="psk_hi">PSK High:</label>
+                                <input class="form-control field byte-489" data-i="485" maxlength="4" size="4"
+                                    id="psk_hi" name="psk_hi" value="{{printHex .fw.PSK.High}}">
+
+                                <label for="psk_lo">PSK Low:</label>
+                                <input class="form-control field byte-485" data-i="485" maxlength="8" size="8"
+                                    id="psk_lo" name="psk_lo" value="{{printHex .fw.PSK.Low}}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">
+                                <label for="programming_date">Last programming date:</label>
+                                <input class="form-control field byte-2" data-i="2" type="date" id="programming_date"
+                                    name="programming_date" value="{{isoDate .fw.ProgrammingDate}}">
+                            </div>
+                            <div class="col-4">
+                                <label for="sps_count">SPS Counter:</label>
+                                <input class="form-control field byte-54" data-i="54" min="0" type="number"
+                                    id="sps_count" name="sps_count" value="{{.fw.Vin.SpsCount}}"><br>
+                            </div>
+                        </div>
                         <label>Programming IDs:</label>
                         {{range $key, $val := .fw.ProgrammingID}}
                         <div class="input-group">
@@ -152,56 +156,68 @@
                             <input class="form-control field byte-57" data-i="57" id="prog_id_{{$key}}"
                                 name="prog_id[{{$key}}]" maxlength="10" size="10" type="text" value="{{$val}}">
                         </div>
-
                         {{end}}
-
                     </div>
                 </div>
-                <div class="col">
-                    <label>Part numbers:</label>
-                    <label for="snsticker">Serial sticker:</label>
-                    <input class="form-control field byte-461" type="text" data-i="461" maxlength="10" size="11"
-                        id="snsticker" name="snsticker" value="{{.fw.SnSticker}}"><br>
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="">Factory programming date:</label>
+                            <input class="form-control field byte-466" type="date" data-i="466" maxlength="10" size="10"
+                                id="fp_date" name="fp_date" value="{{isoDate .fw.ProgrammingFactoryDate}}">
+
+                            <label for="snsticker">Serial sticker:</label>
+                            <input class="form-control field byte-461" type="text" data-i="461" maxlength="10" size="11"
+                                id="snsticker" name="snsticker" value="{{.fw.SnSticker}}">
+                        </div>
+                    </div>
                     <label for="partno1">End model (HW+SW)</label>
                     <div class="row">
-                        <div class="col-10">
-                            <input class="form-control field byte-11" type="text" data-i="11" maxlength="8" size="8"
-                                id="partno1" name="partno1" value="{{.fw.PartNo1}}"><br>
-                        </div>
-                        <div class="col-2">
-                            <input class="form-control field byte-15" type="text" data-i="15" maxlength="2" size="2"
-                                value="{{.fw.PartNo1Rev}}"><br>
+                        <div class="input-group">
+                            <div class="col-10">
+                                <input class="form-control field byte-11" type="text" data-i="11" maxlength="8" size="8"
+                                    id="partno1" name="partno1" value="{{.fw.PartNo1}}">
+                            </div>
+                            <div class="col-2">
+                                <input class="form-control field byte-15" type="text" data-i="15" maxlength="2" size="2"
+                                    id="partno1rev" name="partno1rev" value="{{.fw.PartNo1Rev}}">
+                            </div>
                         </div>
                     </div>
                     <label for="pnbase1">Base model (HW+boot)</label>
                     <div class="row">
-                        <div class="col-10">
-                            <input class="form-control field byte-21" type="text" data-i="21" maxlength="8" size="8"
-                                id="pnbase1" name="pnbase1" value="{{.fw.PnBase1}}">
-                        </div>
-                        <div class="col-2">
-                            <input class="form-control field byte-25" type="text" data-i="25" maxlength="2" size="2"
-                                value="{{.fw.PnBase1Rev}}"><br>
+                        <div class="input-group">
+                            <div class="col-10">
+                                <input class="form-control field byte-21" type="text" data-i="21" maxlength="8" size="8"
+                                    id="pnbase1" name="pnbase1" value="{{.fw.PnBase1}}">
+                            </div>
+                            <div class="col-2">
+                                <input class="form-control field byte-25" type="text" id="pnbase1rev" name="pnbase1rev"
+                                    data-i="25" maxlength="2" size="2" value="{{.fw.PnBase1Rev}}">
+                            </div>
                         </div>
                     </div>
 
-                    <label for="pndelphi">Delphi part number:</label>
-                    <input class="form-control field byte-472" data-i="472" type="text" maxlength="8" size="8"
-                        id="pndelphi" name="pndelphi" value="{{.fw.DelphiPN}}"><br>
-                    <label for="partno">SAAB part number:</label>
-                    <input class="form-control field byte-478" data-i="478" maxlength="8" size="8" type="text"
-                        id="partno" name="partno" value="{{.fw.PartNo}}"><br>
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="pndelphi">Delphi part number:</label>
+                            <input class="form-control field byte-472" data-i="472" type="text" maxlength="8" size="8"
+                                id="pndelphi" name="pndelphi" value="{{.fw.DelphiPN}}">
+                            <label for="partno">SAAB part number:</label>
+                            <input class="form-control field byte-478" data-i="478" maxlength="8" size="8" type="text"
+                                id="partno" name="partno" value="{{.fw.PartNo}}">
 
-                    <label for="conf_ver">Configuration Version: </label>
-                    <input class="form-control field byte-17" type="text" data-i="17" maxlength="8" size="8"
-                        id="conf_ver" name="conf_ver" value="{{.fw.ConfigurationVersion}}"><br>
-
+                            <label for="conf_ver">Configuration Version: </label>
+                            <input class="form-control field byte-17" type="text" data-i="17" maxlength="8" size="8"
+                                id="conf_ver" name="conf_ver" value="{{.fw.ConfigurationVersion}}">
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         <input type="hidden" name="file_update" id="file_update" value="{{.B64}}">
                         <input type="hidden" name="filename" id="filename" value="{{.filename}}">
-                        <input type="submit" value="Update" name="submit"><br><br>
+                        <input type="submit" value="Update" name="submit">
                     </div>
                     <div class="col">
                     </div>
