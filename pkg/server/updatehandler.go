@@ -24,7 +24,9 @@ type updateRequest struct {
 	ProgID          []string `json:"prog_id"`
 	Snsticker       string   `json:"snsticker"`
 	Partno1         string   `json:"partno1"`
+	Partno1Rev      string   `json:"partno1rev"`
 	Pnbase1         string   `json:"pnbase1"`
+	Pnbase1Rev      string   `json:"pnbase1rev"`
 	Pndelphi        string   `json:"pndelphi"`
 	Partno          string   `json:"partno"`
 	ConfVer         string   `json:"conf_ver"`
