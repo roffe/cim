@@ -13,12 +13,10 @@ import (
 
 	"github.com/albenik/bcd"
 	"github.com/ghostiam/binstruct"
-	"github.com/jedib0t/go-pretty/table"
 )
 
 var (
-	tableTheme = table.StyleColoredDark
-	Debug      = false
+	Debug = false
 )
 
 const IsoDate = "2006-01-02"
@@ -75,7 +73,7 @@ func MustLoadBytes(filename string, b []byte) (*Bin, error) {
 	return fw, nil
 }
 
-// Cim eeprom binary layout
+// Cim eeprom layout
 type Bin struct {
 	filename               string        `bin:"-" json:"-"`
 	MagicByte              byte          `bin:"len:1" json:"magic_byte"`               // 0x20

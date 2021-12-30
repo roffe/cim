@@ -38,24 +38,6 @@ func Run(enableShutdown bool, prefix string) error {
 	return r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
 
-func openbrowser(url string) {
-	var err error
-	switch runtime.GOOS {
-	case "linux":
-		err = exec.Command("xdg-open", url).Start()
-	case "windows":
-		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
-	case "darwin":
-		err = exec.Command("open", url).Start()
-	default:
-		err = fmt.Errorf("unsupported platform")
-	}
-	if err != nil {
-		log.Println("failed to open browser for you:", err)
-	}
-
-}
-
 func setupRouter(enableShutdown bool, path string) (*gin.Engine, error) {
 	r := gin.Default()
 	// Load templates
@@ -84,6 +66,7 @@ func setupRouter(enableShutdown bool, path string) (*gin.Engine, error) {
 	return r, nil
 }
 
+// create a http path based on a give path prefix
 func p(prefix, path string) string {
 	var o strings.Builder
 	if prefix != "" {
@@ -91,6 +74,23 @@ func p(prefix, path string) string {
 	}
 	o.WriteString(path)
 	return o.String()
+}
+
+func openbrowser(url string) {
+	var err error
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		log.Println("failed to open browser for you:", err)
+	}
 }
 
 var bootOrder = []string{"83", "1B", "57", "AF", "C3", "C7", "F3", "FD", "147", "160", "176", "1A2", "1B0", "1B8", "1BF", "1E5", "83", "B9", "DD", "122", "18C", "1A8", "1C6"}

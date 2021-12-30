@@ -10,6 +10,10 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 )
 
+var (
+	tableTheme = table.StyleColoredDark
+)
+
 func (fw *Bin) Pretty() {
 	t := s("CIM Dump analyser: " + filepath.Base(fw.filename))
 	t.AppendRows([]table.Row{
