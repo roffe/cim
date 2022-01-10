@@ -1,7 +1,5 @@
 # CIM Column Integrated Module
 
--- WIP -- This is not accurate and production ready yet
-
 Visualize and modify Saab 9-3 CIM eeprom dump
 
 Golang impementation of findings from https://www.trionictuning.com/forum/viewtopic.php?f=5&t=2167
@@ -11,8 +9,3 @@ Golang impementation of findings from https://www.trionictuning.com/forum/viewto
     go run .
 
 goto http://localhost:8080 in browser of choice
-
-## Todo
-
-* Implement update bin function
-* Fix ISK High & Low
