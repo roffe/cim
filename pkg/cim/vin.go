@@ -43,6 +43,11 @@ func (v *Vin) Set(vin string) error {
 	return nil
 }
 
+func (v *Vin) SetValue(val uint8) {
+	v.Value = val
+	v.updateChecksum()
+}
+
 func (v *Vin) SetSpsCount(value uint8) {
 	v.SpsCount = value
 	v.updateChecksum()

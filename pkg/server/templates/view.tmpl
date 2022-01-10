@@ -24,7 +24,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <b>MD5:</b> {{.fw.MD5}} <b>CRC32:</b> {{.fw.CRC32}}
+                <b>MD5:</b> <span id="md5">{{.fw.MD5}}</span> <b>CRC32:</b> <span id="crc32">{{.fw.CRC32}}</span>
             </div>
         </div>
         <form action="" id="options">
@@ -34,17 +34,27 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <div class="row">
-                                    <div class="col-12">
+                                    <div class="col-4">
                                         <label for="vin">Vin:</label>
                                         <input autocomplete="off" class="form-control field byte-28" data-i="28"
                                             type="text" maxlength="17" size="17" id="vin" name="vin"
-                                            value="{{.fw.Vin.Data}}">&nbsp;<b>Model
-                                            Year:</b>
-                                        {{.fw.ModelYear}}
+                                            value="{{.fw.Vin.Data}}">
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="vin_value">Value:</label>
+                                        <input class="form-control field byte-44" data-i="44"
+                                            type="text" maxlength="17" size="17" id="vin_value" name="vin_value"
+                                            value="{{.fw.Vin.Value}}">
+                                    </div>
+                                    <div class="col-4">
                                         <label for="pin">Pin:</label>
                                         <input class="form-control field byte-175" data-i="175" type="text"
                                             maxlength="8" size="8" id="pin" name="pin"
                                             value="{{printHex .fw.Pin.Data1}}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
                                         <label for="sas">Steering Angle Sensor:</label>
                                         <input class="form-check-input field byte-4" data-i="4" type="checkbox" id="sas"
                                             name="sas" {{boolChecked .fw.SasOpt}}><br>
@@ -58,7 +68,7 @@
                                     </div>
                                     <div class="col-6">
                                         <label for="keyerrors">Key errors:</label>
-                                        <input class="form-control field byte-287" data-i="287" min="0" max="5"
+                                        <input class="form-control field byte-287" data-i="287" min="0" max="255"
                                             id="keyerrors" name="keyerrors" type="number" value="{{.fw.Keys.Errors1}}">
                                     </div>
                                 </div>

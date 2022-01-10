@@ -42,6 +42,8 @@ $("#options").on("submit", function (e) {
         type: 'POST',
         success: function (data) {
             $('#dump_contents').html(data.hexview);
+            $('#md5').html(data.md5);
+            $('#crc32').html(data.crc32);
             setTimeout(() => {
                 processSections();
             }, 50);

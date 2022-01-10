@@ -13,6 +13,7 @@ import (
 
 type updateRequest struct {
 	Vin             string   `json:"vin"`
+	VinValue        string   `json:"vin_value"`
 	SpsCount        string   `json:"sps_count"`
 	Pin             string   `json:"pin"`
 	Sas             string   `json:"sas"`
@@ -102,23 +103,10 @@ func updateHandler(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
-	//c.String(200, hexRows)
-	/*
-		sections := generateSections(fw)
-		styles := generateStyles(sections)
-		jsSections := jsSections(sections)
-
-		c.HTML(http.StatusOK, "view.tmpl", gin.H{
-			"filename": filepath.Base(u.Filename),
-			"fw":       fw,
-			"B64":      base64.StdEncoding.EncodeToString(fwBytes),
-			"Hexview":  template.HTML(hexRows),
-			"sections": template.JS(jsSections),
-			"styles":   styles,
-		})
-	*/
 
 	c.JSON(http.StatusOK, gin.H{
+		"md5":     fw.MD5(),
+		"crc32":   fw.CRC32(),
 		"B64":     base64.StdEncoding.EncodeToString(fwBytes),
 		"hexview": hexRows,
 	})
@@ -146,6 +134,13 @@ func updateVin(fw *cim.Bin, u updateRequest) error {
 	if err := fw.Vin.Set(u.Vin); err != nil {
 		return fmt.Errorf("failed to set vin: %v", err)
 	}
+
+	if n, err := strconv.ParseUint(u.VinValue, 0, 8); err == nil {
+		fw.Vin.SetValue(uint8(n))
+	} else {
+		return fmt.Errorf("failed to parse vin value: %q %s", u.VinValue, err.Error())
+	}
+
 	if n, err := strconv.ParseUint(u.SpsCount, 0, 8); err == nil {
 		fw.Vin.SetSpsCount(uint8(n))
 	} else {
