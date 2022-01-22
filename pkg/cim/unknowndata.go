@@ -109,7 +109,7 @@ type UnknownData5 struct {
 
 func (u *UnknownData5) validate() error {
 	if u.Checksum != u.Crc16() {
-		return fmt.Errorf("UnknownData5 data " + errChecksum)
+		return fmt.Errorf("UnknownData5 calculated:%04d, actuall: %04d data %v", u.Crc16(), u.Checksum, errChecksum)
 	}
 	return nil
 }

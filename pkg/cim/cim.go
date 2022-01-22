@@ -175,6 +175,10 @@ func (bin *Bin) SetSasOpt(opt bool) {
 	}
 }
 
+func (bin *Bin) SetConfVer(ver uint32) {
+	bin.ConfigurationVersion = ver
+}
+
 func (bin *Bin) SetProgrammingID(no int, value string) error {
 	if len(value) > 10 {
 		return fmt.Errorf("programming id to long")

@@ -36,7 +36,6 @@ func init() {
 }
 
 func main() {
-
 	// if we pass a filename, print to the console instead of starting ui
 	if len(flag.Args()) >= 1 {
 		filename := flag.Args()[0]

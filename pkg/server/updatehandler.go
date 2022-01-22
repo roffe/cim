@@ -64,6 +64,7 @@ func updateHandler(c *gin.Context) {
 
 	if err := updateVin(fw, u); err != nil {
 		c.String(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	if u.Sas == "on" {
@@ -81,6 +82,13 @@ func updateHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, fmt.Sprintf("invalid sync data: %v", err))
 		return
 	}
+
+	confVer, err := strconv.ParseUint(u.ConfVer, 0, 32)
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+	fw.SetConfVer(uint32(confVer))
 
 	for i, s := range u.ProgID {
 		if err := fw.SetProgrammingID(i, s); err != nil {
