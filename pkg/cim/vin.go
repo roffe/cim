@@ -18,7 +18,7 @@ type Vin struct {
 func (v *Vin) validate() error {
 	c := v.Crc16()
 	if v.Checksum != c {
-		return fmt.Errorf("vin cheksum validation failed, expected: %X in bin: %X", c, v.Checksum)
+		return fmt.Errorf("vin cheksum validation failed, calculated: %X in bin: %X", c, v.Checksum)
 	}
 	return nil
 }

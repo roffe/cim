@@ -111,11 +111,11 @@ func (k *Keys) validate() error {
 	c1, c2 := k.Crc16()
 
 	if c1 != k.Checksum1 {
-		return fmt.Errorf("calculated bank 1 checksum %X does not match stored %X", c1, k.Checksum1)
+		return fmt.Errorf("keys calculated bank 1 checksum %X does not match stored %X", c1, k.Checksum1)
 	}
 
 	if c2 != k.Checksum1 {
-		return fmt.Errorf("calculated bank 1 checksum %X does not match stored %X", c1, k.Checksum1)
+		return fmt.Errorf("keys calculated bank 1 checksum %X does not match stored %X", c1, k.Checksum1)
 	}
 
 	return nil

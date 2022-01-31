@@ -22,9 +22,7 @@ func (s *Sync) SetData(no uint8, data []byte) error {
 
 func (s *Sync) validate() error {
 	if s.Checksum != s.Crc16() {
-		if s.Checksum != s.Crc16() {
-			return fmt.Errorf("sync data checksum does not match calculated checksum")
-		}
+		return fmt.Errorf("sync data checksum: %X does not match calculated checksum: %X", s.Checksum, s.Crc16())
 	}
 	return nil
 }
